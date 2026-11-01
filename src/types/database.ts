@@ -231,3 +231,75 @@ export interface ContractionRecord {
   duration_seconds: number;
   interval_seconds?: number;
 }
+
+// ==============================================================================
+// 6. MÓDULO DE ROTINA DIÁRIA DO BEBÊ (DE A A Z)
+// ==============================================================================
+
+export type FeedingType = 'breast' | 'bottle' | 'solid';
+export type BottleContent = 'formula' | 'breast_milk' | 'water' | 'juice' | 'other';
+export type SolidAcceptance = 'great' | 'good' | 'little' | 'refused';
+
+export interface FeedingLog {
+  id: string;
+  baby_id: string;
+  type: FeedingType;
+  start_time: string; // ISO string
+  end_time?: string;
+  // Se for seio
+  left_breast_seconds?: number;
+  right_breast_seconds?: number;
+  last_breast_used?: 'left' | 'right';
+  // Se for mamadeira / copo
+  bottle_volume_ml?: number;
+  bottle_content?: BottleContent;
+  // Se for introdução alimentar sólida
+  solid_food_name?: string;
+  solid_acceptance?: SolidAcceptance;
+  notes?: string;
+  logged_by: string; // "Mamãe", "Papai", "Babá"
+}
+
+export type DiaperType = 'pee' | 'poo' | 'both' | 'dry';
+export type DiaperPooColor = 'yellow' | 'green' | 'brown' | 'black' | 'red' | 'white';
+export type DiaperPooConsistency = 'liquid' | 'pasty' | 'formed' | 'hard';
+export type DiaperPeeVolume = 'light' | 'normal' | 'heavy';
+
+export interface DiaperLog {
+  id: string;
+  baby_id: string;
+  timestamp: string; // ISO string
+  type: DiaperType;
+  poo_color?: DiaperPooColor;
+  poo_consistency?: DiaperPooConsistency;
+  pee_volume?: DiaperPeeVolume;
+  clinical_alert?: string; // Ex: "Atenção: Fezes brancas exigem avaliação médica urgente"
+  notes?: string;
+  logged_by: string;
+}
+
+export type SleepType = 'nap' | 'night';
+export type SleepLocation = 'crib' | 'arms' | 'stroller' | 'bed' | 'other';
+export type SleepQuality = 'calm' | 'agitated' | 'restless';
+
+export interface SleepLog {
+  id: string;
+  baby_id: string;
+  start_time: string; // ISO string
+  end_time?: string; // Se undefined/null, está dormindo agora
+  duration_minutes?: number;
+  sleep_type: SleepType;
+  location?: SleepLocation;
+  quality?: SleepQuality;
+  notes?: string;
+  logged_by: string;
+}
+
+export interface TummyTimeLog {
+  id: string;
+  baby_id: string;
+  timestamp: string;
+  duration_minutes: number;
+  notes?: string;
+  logged_by: string;
+}

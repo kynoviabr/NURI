@@ -55,6 +55,20 @@ export default function RootLayout() {
             name="modals/contraction-timer"
             options={{ presentation: 'modal', headerShown: true, title: 'Contador de Contrações', headerTintColor: Colors.textPrimary, headerStyle: { backgroundColor: '#FFFFFF' } }}
           />
+
+          {/* MODAIS DE ROTINA DIÁRIA */}
+          <Stack.Screen
+            name="modals/add-feeding"
+            options={{ presentation: 'modal', headerShown: true, title: 'Registrar Alimentação', headerTintColor: Colors.textPrimary, headerStyle: { backgroundColor: '#FFFFFF' } }}
+          />
+          <Stack.Screen
+            name="modals/add-diaper"
+            options={{ presentation: 'modal', headerShown: true, title: 'Registrar Troca de Fralda', headerTintColor: Colors.textPrimary, headerStyle: { backgroundColor: '#FFFFFF' } }}
+          />
+          <Stack.Screen
+            name="modals/add-sleep"
+            options={{ presentation: 'modal', headerShown: true, title: 'Registrar Sono & Soneca', headerTintColor: Colors.textPrimary, headerStyle: { backgroundColor: '#FFFFFF' } }}
+          />
         </Stack>
       </AppProvider>
     </SafeAreaProvider>

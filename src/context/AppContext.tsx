@@ -14,7 +14,12 @@ import {
   MaternalHealthLog,
   MaternityBagItem,
   ContractionRecord,
+  FeedingLog,
+  DiaperLog,
+  SleepLog,
+  TummyTimeLog,
 } from '../types/database';
+
 import { calculateNextDose, calculateWHOWeightPercentile, calculateBabyAge } from '../utils/babyCalculations';
 
 const INITIAL_BABY: Baby = {
@@ -219,6 +224,129 @@ const INITIAL_EMERGENCY_SHARE: EmergencyShare = {
   is_active: true,
 };
 
+// Dados Iniciais de Rotina Diária
+const getRecentIso = (hoursAgo: number, minutesAgo: number = 0) => {
+  const d = new Date(Date.now() - (hoursAgo * 60 + minutesAgo) * 60 * 1000);
+  return d.toISOString();
+};
+
+const INITIAL_FEEDINGS: FeedingLog[] = [
+  {
+    id: 'f1',
+    baby_id: 'b1',
+    type: 'breast',
+    start_time: getRecentIso(2, 15),
+    end_time: getRecentIso(1, 55),
+    left_breast_seconds: 720,
+    right_breast_seconds: 480,
+    last_breast_used: 'right',
+    notes: 'Mamou super bem, arrotou sem regurgitar.',
+    logged_by: 'Mamãe (Marina)',
+  },
+  {
+    id: 'f2',
+    baby_id: 'b1',
+    type: 'bottle',
+    start_time: getRecentIso(5, 30),
+    end_time: getRecentIso(5, 10),
+    bottle_volume_ml: 120,
+    bottle_content: 'breast_milk',
+    notes: 'Leite materno ordenhado na mamadeira anticólica.',
+    logged_by: 'Papai (Lucas)',
+  },
+  {
+    id: 'f3',
+    baby_id: 'b1',
+    type: 'breast',
+    start_time: getRecentIso(8, 45),
+    end_time: getRecentIso(8, 20),
+    left_breast_seconds: 900,
+    right_breast_seconds: 600,
+    last_breast_used: 'left',
+    notes: 'Mamada da manhã tranquila.',
+    logged_by: 'Mamãe (Marina)',
+  },
+];
+
+const INITIAL_DIAPERS: DiaperLog[] = [
+  {
+    id: 'd1',
+    baby_id: 'b1',
+    timestamp: getRecentIso(1, 10),
+    type: 'both',
+    poo_color: 'yellow',
+    poo_consistency: 'pasty',
+    pee_volume: 'normal',
+    notes: 'Amarelo ouro típico, pele íntegra.',
+    logged_by: 'Mamãe (Marina)',
+  },
+  {
+    id: 'd2',
+    baby_id: 'b1',
+    timestamp: getRecentIso(4, 20),
+    type: 'pee',
+    pee_volume: 'heavy',
+    notes: 'Xixi abundante e claro.',
+    logged_by: 'Papai (Lucas)',
+  },
+  {
+    id: 'd3',
+    baby_id: 'b1',
+    timestamp: getRecentIso(7, 40),
+    type: 'both',
+    poo_color: 'yellow',
+    poo_consistency: 'pasty',
+    pee_volume: 'normal',
+    logged_by: 'Mamãe (Marina)',
+  },
+  {
+    id: 'd4',
+    baby_id: 'b1',
+    timestamp: getRecentIso(11, 0),
+    type: 'pee',
+    pee_volume: 'normal',
+    logged_by: 'Mamãe (Marina)',
+  },
+];
+
+const INITIAL_SLEEPS: SleepLog[] = [
+  {
+    id: 's1',
+    baby_id: 'b1',
+    start_time: getRecentIso(4, 0),
+    end_time: getRecentIso(2, 45),
+    duration_minutes: 75,
+    sleep_type: 'nap',
+    location: 'crib',
+    quality: 'calm',
+    notes: 'Soneca relaxada com ruído branco.',
+    logged_by: 'Mamãe (Marina)',
+  },
+  {
+    id: 's2',
+    baby_id: 'b1',
+    start_time: getRecentIso(12, 0),
+    end_time: getRecentIso(6, 30),
+    duration_minutes: 330,
+    sleep_type: 'night',
+    location: 'crib',
+    quality: 'calm',
+    notes: 'Noite tranquila com apenas 1 despertar breve para mamar.',
+    logged_by: 'Papai (Lucas)',
+  },
+];
+
+const INITIAL_TUMMY_TIMES: TummyTimeLog[] = [
+  {
+    id: 'tt1',
+    baby_id: 'b1',
+    timestamp: getRecentIso(3, 0),
+    duration_minutes: 10,
+    notes: 'Sustentou a cabecinha olhando para brinquedos coloridos.',
+    logged_by: 'Mamãe (Marina)',
+  },
+];
+
 interface AppContextType {
   baby: Baby;
   setBaby: (baby: Baby) => void;
@@ -254,7 +382,19 @@ interface AppContextType {
   addBagItem: (category: MaternityBagItem['category'], name: string, quantity?: string) => void;
   contractions: ContractionRecord[];
   addContraction: (durationSeconds: number, intervalSeconds?: number) => void;
+
+  // Módulo Rotina Diária (De A a Z)
+  feedings: FeedingLog[];
+  addFeedingLog: (data: Omit<FeedingLog, 'id'>) => void;
+  diapers: DiaperLog[];
+  addDiaperLog: (data: Omit<DiaperLog, 'id'>) => void;
+  sleeps: SleepLog[];
+  addSleepLog: (data: Omit<SleepLog, 'id'>) => void;
+  finishActiveSleep: (sleepId: string) => void;
+  tummyTimes: TummyTimeLog[];
+  addTummyTimeLog: (data: Omit<TummyTimeLog, 'id'>) => void;
 }
+
 
 const AppContext = createContext<AppContextType | null>(null);
 
@@ -277,6 +417,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [maternalLogs, setMaternalLogs] = useState<MaternalHealthLog[]>(INITIAL_MATERNAL_LOGS);
   const [maternityBag, setMaternityBag] = useState<MaternityBagItem[]>(INITIAL_MATERNITY_BAG);
   const [contractions, setContractions] = useState<ContractionRecord[]>([]);
+
+  // Rotina Diária
+  const [feedings, setFeedings] = useState<FeedingLog[]>(INITIAL_FEEDINGS);
+  const [diapers, setDiapers] = useState<DiaperLog[]>(INITIAL_DIAPERS);
+  const [sleeps, setSleeps] = useState<SleepLog[]>(INITIAL_SLEEPS);
+  const [tummyTimes, setTummyTimes] = useState<TummyTimeLog[]>(INITIAL_TUMMY_TIMES);
+
 
   const toggleBabyMode = () => {
     setBaby((prev) => (prev.status === 'born' ? INITIAL_GESTATION_BABY : INITIAL_BABY));
@@ -442,6 +589,57 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setContractions((prev) => [newRecord, ...prev]);
   };
 
+  // Rotina Diária Handlers
+  const addFeedingLog = (data: Omit<FeedingLog, 'id'>) => {
+    const newRecord: FeedingLog = {
+      ...data,
+      id: `f_${Date.now()}`,
+    };
+    setFeedings((prev) => [newRecord, ...prev]);
+  };
+
+  const addDiaperLog = (data: Omit<DiaperLog, 'id'>) => {
+    const newRecord: DiaperLog = {
+      ...data,
+      id: `d_${Date.now()}`,
+    };
+    setDiapers((prev) => [newRecord, ...prev]);
+  };
+
+  const addSleepLog = (data: Omit<SleepLog, 'id'>) => {
+    const newRecord: SleepLog = {
+      ...data,
+      id: `s_${Date.now()}`,
+    };
+    setSleeps((prev) => [newRecord, ...prev]);
+  };
+
+  const finishActiveSleep = (sleepId: string) => {
+    const nowIso = new Date().toISOString();
+    setSleeps((prev) =>
+      prev.map((s) => {
+        if (s.id === sleepId) {
+          const startMs = new Date(s.start_time).getTime();
+          const durationMin = Math.max(1, Math.round((Date.now() - startMs) / (1000 * 60)));
+          return {
+            ...s,
+            end_time: nowIso,
+            duration_minutes: durationMin,
+          };
+        }
+        return s;
+      })
+    );
+  };
+
+  const addTummyTimeLog = (data: Omit<TummyTimeLog, 'id'>) => {
+    const newRecord: TummyTimeLog = {
+      ...data,
+      id: `tt_${Date.now()}`,
+    };
+    setTummyTimes((prev) => [newRecord, ...prev]);
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -475,12 +673,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         addBagItem,
         contractions,
         addContraction,
+        feedings,
+        addFeedingLog,
+        diapers,
+        addDiaperLog,
+        sleeps,
+        addSleepLog,
+        finishActiveSleep,
+        tummyTimes,
+        addTummyTimeLog,
       }}
     >
       {children}
     </AppContext.Provider>
   );
 };
+
 
 export const useApp = () => {
   const context = useContext(AppContext);

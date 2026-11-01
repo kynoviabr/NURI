@@ -368,3 +368,115 @@ FOR ALL USING (
         WHERE fm.user_id = auth.uid()
     )
 );
+
+-- ==============================================================================
+-- MÓDULO DE ROTINA DIÁRIA DO BEBÊ (DE A A Z)
+-- ==============================================================================
+
+-- 18. ALIMENTAÇÃO E AMAMENTAÇÃO (SEIO, MAMADEIRA E INTRODUÇÃO ALIMENTAR)
+CREATE TABLE IF NOT EXISTS public.feeding_logs (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    baby_id UUID NOT NULL REFERENCES public.babies(id) ON DELETE CASCADE,
+    type TEXT NOT NULL CHECK (type IN ('breast', 'bottle', 'solid')),
+    start_time TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    end_time TIMESTAMP WITH TIME ZONE,
+    left_breast_seconds INT DEFAULT 0,
+    right_breast_seconds INT DEFAULT 0,
+    last_breast_used TEXT CHECK (last_breast_used IN ('left', 'right')),
+    bottle_volume_ml INT,
+    bottle_content TEXT CHECK (bottle_content IN ('formula', 'breast_milk', 'water', 'juice', 'other')),
+    solid_food_name TEXT,
+    solid_acceptance TEXT CHECK (solid_acceptance IN ('great', 'good', 'little', 'refused')),
+    notes TEXT,
+    logged_by TEXT NOT NULL DEFAULT 'Responsável',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 19. FRALDAS COM CLASSIFICAÇÃO CLÍNICA DE CORES E CONSISTÊNCIA
+CREATE TABLE IF NOT EXISTS public.diaper_logs (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    baby_id UUID NOT NULL REFERENCES public.babies(id) ON DELETE CASCADE,
+    timestamp TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    type TEXT NOT NULL CHECK (type IN ('pee', 'poo', 'both', 'dry')),
+    poo_color TEXT CHECK (poo_color IN ('yellow', 'green', 'brown', 'black', 'red', 'white')),
+    poo_consistency TEXT CHECK (poo_consistency IN ('liquid', 'pasty', 'formed', 'hard')),
+    pee_volume TEXT CHECK (pee_volume IN ('light', 'normal', 'heavy')),
+    clinical_alert TEXT,
+    notes TEXT,
+    logged_by TEXT NOT NULL DEFAULT 'Responsável',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 20. SONO E JANELAS DE VIGÍLIA
+CREATE TABLE IF NOT EXISTS public.sleep_logs (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    baby_id UUID NOT NULL REFERENCES public.babies(id) ON DELETE CASCADE,
+    start_time TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    end_time TIMESTAMP WITH TIME ZONE,
+    duration_minutes INT,
+    sleep_type TEXT NOT NULL DEFAULT 'nap' CHECK (sleep_type IN ('nap', 'night')),
+    location TEXT CHECK (location IN ('crib', 'arms', 'stroller', 'bed', 'other')),
+    quality TEXT CHECK (quality IN ('calm', 'agitated', 'restless')),
+    notes TEXT,
+    logged_by TEXT NOT NULL DEFAULT 'Responsável',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 21. TUMMY TIME (FORTALECIMENTO CERVICAL)
+CREATE TABLE IF NOT EXISTS public.tummy_time_logs (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    baby_id UUID NOT NULL REFERENCES public.babies(id) ON DELETE CASCADE,
+    timestamp TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    duration_minutes INT NOT NULL,
+    notes TEXT,
+    logged_by TEXT NOT NULL DEFAULT 'Responsável',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ÍNDICES DE PERFORMANCE PARA CONSULTAS EM TEMPO REAL
+CREATE INDEX IF NOT EXISTS idx_feeding_baby ON public.feeding_logs(baby_id, start_time DESC);
+CREATE INDEX IF NOT EXISTS idx_diaper_baby ON public.diaper_logs(baby_id, timestamp DESC);
+CREATE INDEX IF NOT EXISTS idx_sleep_baby ON public.sleep_logs(baby_id, start_time DESC);
+
+-- POLÍTICAS RLS PARA ROTINA
+ALTER TABLE public.feeding_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.diaper_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.sleep_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.tummy_time_logs ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Family members access feeding_logs" ON public.feeding_logs
+FOR ALL USING (
+    baby_id IN (
+        SELECT b.id FROM public.babies b
+        JOIN public.family_members fm ON fm.family_id = b.family_id
+        WHERE fm.user_id = auth.uid()
+    )
+);
+
+CREATE POLICY "Family members access diaper_logs" ON public.diaper_logs
+FOR ALL USING (
+    baby_id IN (
+        SELECT b.id FROM public.babies b
+        JOIN public.family_members fm ON fm.family_id = b.family_id
+        WHERE fm.user_id = auth.uid()
+    )
+);
+
+CREATE POLICY "Family members access sleep_logs" ON public.sleep_logs
+FOR ALL USING (
+    baby_id IN (
+        SELECT b.id FROM public.babies b
+        JOIN public.family_members fm ON fm.family_id = b.family_id
+        WHERE fm.user_id = auth.uid()
+    )
+);
+
+CREATE POLICY "Family members access tummy_time_logs" ON public.tummy_time_logs
+FOR ALL USING (
+    baby_id IN (
+        SELECT b.id FROM public.babies b
+        JOIN public.family_members fm ON fm.family_id = b.family_id
+        WHERE fm.user_id = auth.uid()
+    )
+);
+

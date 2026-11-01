@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { Image as ImageIcon, Sparkles, ShieldPlus, Users } from 'lucide-react-native';
+import { Image as ImageIcon, Sparkles, ShieldPlus, Users, Clock } from 'lucide-react-native';
 import { Colors, Shadows } from '../../src/constants/theme';
 import { Platform } from 'react-native';
 
@@ -21,9 +21,9 @@ export default function TabLayout() {
           ...Shadows.subtle,
         },
         tabBarLabelStyle: {
-          fontSize: 11,
+          fontSize: 10.5,
           fontWeight: '700',
-          letterSpacing: 0.2,
+          letterSpacing: 0.1,
           marginTop: 2,
         },
       }}
@@ -33,7 +33,16 @@ export default function TabLayout() {
         options={{
           title: 'Memórias',
           tabBarIcon: ({ color, focused }) => (
-            <ImageIcon color={color} size={focused ? 24 : 22} strokeWidth={focused ? 2.4 : 1.8} />
+            <ImageIcon color={color} size={focused ? 23 : 21} strokeWidth={focused ? 2.4 : 1.8} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="routine"
+        options={{
+          title: 'Rotina',
+          tabBarIcon: ({ color, focused }) => (
+            <Clock color={color} size={focused ? 23 : 21} strokeWidth={focused ? 2.4 : 1.8} />
           ),
         }}
       />
@@ -42,10 +51,11 @@ export default function TabLayout() {
         options={{
           title: 'Jornada',
           tabBarIcon: ({ color, focused }) => (
-            <Sparkles color={color} size={focused ? 24 : 22} strokeWidth={focused ? 2.4 : 1.8} />
+            <Sparkles color={color} size={focused ? 23 : 21} strokeWidth={focused ? 2.4 : 1.8} />
           ),
         }}
       />
+
       <Tabs.Screen
         name="health"
         options={{

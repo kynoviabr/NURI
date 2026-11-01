@@ -201,3 +201,173 @@ export function formatRelativeDate(dateStr: string): string {
 
   return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
 }
+
+// ==============================================================================
+// CÁLCULOS PEDIÁTRICOS DE ROTINA DIÁRIA (SONO, MAMADAS E FRALDAS)
+// ==============================================================================
+
+export interface WakeWindowInfo {
+  minMinutes: number;
+  maxMinutes: number;
+  minutesAwake: number;
+  progressPercentage: number;
+  status: 'calm' | 'window_closing' | 'overtired';
+  badgeLabel: string;
+  badgeColor: string;
+  guidanceText: string;
+}
+
+/**
+ * Calcula a Janela de Vigília (Wake Window) recomendada com base na idade em meses
+ */
+export function calculateWakeWindow(ageMonths: number, minutesAwake: number): WakeWindowInfo {
+  let minMinutes = 60;
+  let maxMinutes = 90;
+
+  if (ageMonths < 1) {
+    minMinutes = 45;
+    maxMinutes = 60;
+  } else if (ageMonths <= 3) {
+    minMinutes = 60;
+    maxMinutes = 90;
+  } else if (ageMonths <= 6) {
+    minMinutes = 90;
+    maxMinutes = 150; // 1.5h - 2.5h
+  } else if (ageMonths <= 9) {
+    minMinutes = 150;
+    maxMinutes = 210; // 2.5h - 3.5h
+  } else if (ageMonths <= 12) {
+    minMinutes = 180;
+    maxMinutes = 240; // 3h - 4h
+  } else {
+    minMinutes = 240;
+    maxMinutes = 330; // 4h - 5.5h
+  }
+
+  const progressPercentage = Math.min(100, Math.round((minutesAwake / maxMinutes) * 100));
+
+  let status: 'calm' | 'window_closing' | 'overtired' = 'calm';
+  let badgeLabel = 'Janela Confortável';
+  let badgeColor = '#2E8555';
+  let guidanceText = 'Bebê em estado de alerta calmo ou brincando.';
+
+  if (minutesAwake >= maxMinutes) {
+    status = 'overtired';
+    badgeLabel = 'Passou da Janela (Cansaço Excessivo)';
+    badgeColor = '#DC2626';
+    guidanceText = 'O bebê pode estar irritado pelo cansaço excessivo. Reduza luzes e ruídos para acalmar.';
+  } else if (minutesAwake >= minMinutes - 15) {
+    status = 'window_closing';
+    badgeLabel = 'Iniciar Ritual do Sono';
+    badgeColor = '#D97706';
+    guidanceText = 'Janela se fechando em breve! Momento ideal para diminuir estímulos e colocar para nanar.';
+  }
+
+  return {
+    minMinutes,
+    maxMinutes,
+    minutesAwake,
+    progressPercentage,
+    status,
+    badgeLabel,
+    badgeColor,
+    guidanceText,
+  };
+}
+
+export interface DiaperClinicalAnalysis {
+  isNormal: boolean;
+  alertLevel: 'normal' | 'warning' | 'urgent';
+  title: string;
+  message: string;
+}
+
+/**
+ * Análise clínica pediátrica de cor e consistência das fezes
+ */
+export function analyzeDiaper(
+  type: 'pee' | 'poo' | 'both' | 'dry',
+  pooColor?: 'yellow' | 'green' | 'brown' | 'black' | 'red' | 'white',
+  pooConsistency?: 'liquid' | 'pasty' | 'formed' | 'hard'
+): DiaperClinicalAnalysis {
+  if (type === 'dry') {
+    return {
+      isNormal: true,
+      alertLevel: 'normal',
+      title: 'Fralda Seca',
+      message: 'Fralda limpa e seca sem necessidade de troca de higiene.',
+    };
+  }
+
+  if (pooColor === 'white') {
+    return {
+      isNormal: false,
+      alertLevel: 'urgent',
+      title: '🚨 Alerta Clínico: Acolia Fecal (Fezes Brancas)',
+      message: 'Fezes brancas ou esbranquiçadas podem indicar obstrução de vias biliares. Leve ao pediatra ou pronto-socorro infantil com urgência.',
+    };
+  }
+
+  if (pooColor === 'red') {
+    return {
+      isNormal: false,
+      alertLevel: 'urgent',
+      title: '⚠️ Atenção: Presença de Sangue',
+      message: 'Presença de rajas de sangue ou sangue vivo nas fezes pode indicar fissura anal, alergia à proteína do leite (APLV) ou infecção. Comunique o pediatra.',
+    };
+  }
+
+  if (pooColor === 'black') {
+    return {
+      isNormal: true,
+      alertLevel: 'warning',
+      title: 'Fezes Escuras / Pretas',
+      message: 'Comum nos primeiros 3-5 dias de vida (mecônio) ou em bebês tomando suplemento de ferro. Se não for esse o caso, relate ao médico.',
+    };
+  }
+
+  if (pooConsistency === 'liquid') {
+    return {
+      isNormal: false,
+      alertLevel: 'warning',
+      title: 'Consistência Líquida / Diarreia',
+      message: 'Atenção à hidratação (ofereça mais peito ou líquidos). Se houver mais de 3 episódios líquidos no dia ou febre, avise o pediatra.',
+    };
+  }
+
+  if (pooConsistency === 'hard') {
+    return {
+      isNormal: false,
+      alertLevel: 'warning',
+      title: 'Fezes Ressecadas / Constipação',
+      message: 'Fezes endurecidas em bolinhas podem causar desconforto e dor ao evacuar. Converse com o pediatra sobre massagens ou hidratação.',
+    };
+  }
+
+  return {
+    isNormal: true,
+    alertLevel: 'normal',
+    title: 'Aspecto Fisiológico Normal',
+    message: 'Coloração e consistência típicas para a idade do bebê.',
+  };
+}
+
+/**
+ * Converte minutos em formato amigável (ex: "1h 45m" ou "30m")
+ */
+export function formatMinutesFriendly(minutes: number): string {
+  if (minutes < 60) return `${minutes} min`;
+  const hours = Math.floor(minutes / 60);
+  const remainingMin = minutes % 60;
+  return remainingMin > 0 ? `${hours}h ${remainingMin}m` : `${hours}h`;
+}
+
+/**
+ * Converte segundos em formato de cronômetro mm:ss
+ */
+export function formatTimerSeconds(totalSeconds: number): string {
+  const m = Math.floor(totalSeconds / 60);
+  const s = totalSeconds % 60;
+  return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+}
+
