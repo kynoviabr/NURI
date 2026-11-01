@@ -33,9 +33,14 @@ export interface FamilyMember {
   role: UserRole;
   relationship_label: string;
   can_post: boolean;
+  can_view_routine?: boolean;
+  can_edit_routine?: boolean;
+  can_view_health?: boolean;
   can_edit_health: boolean;
+  can_manage_members?: boolean;
   profile?: Profile;
 }
+
 
 export interface HealthInsurance {
   plan_name: string;
@@ -322,4 +327,26 @@ export interface FirstMilestoneItem {
   notes?: string;
   logged_by?: string;
 }
+
+// ==============================================================================
+// 8. MÓDULO CÍRCULO FAMILIAR & ACESSO BABÁ/ESCOLA (DE A A Z)
+// ==============================================================================
+
+export type SchoolNoteType = 'entry_note' | 'school_report' | 'supplies_needed' | 'incident';
+export type SchoolNotePriority = 'normal' | 'important' | 'urgent';
+
+export interface SchoolNote {
+  id: string;
+  baby_id: string;
+  date: string;
+  type: SchoolNoteType;
+  title: string;
+  content: string;
+  author_name: string;
+  author_role: string; // 'Mamãe', 'Professora Ana', 'Tia Sandra (Babá)'
+  priority: SchoolNotePriority;
+  supplies_list?: string[]; // Ex: ["Fraldas tamanho M", "Lenço umedecido"]
+  created_at: string;
+}
+
 

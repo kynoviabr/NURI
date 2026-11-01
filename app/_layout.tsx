@@ -75,7 +75,18 @@ export default function RootLayout() {
             name="modals/record-milestone"
             options={{ presentation: 'modal', headerShown: true, title: 'Registrar Primeira Vez', headerTintColor: Colors.textPrimary, headerStyle: { backgroundColor: '#FFFFFF' } }}
           />
+
+          {/* MODAIS DE CÍRCULO FAMILIAR & ESCOLA */}
+          <Stack.Screen
+            name="modals/invite-member"
+            options={{ presentation: 'modal', headerShown: true, title: 'Convidar para a Família', headerTintColor: Colors.textPrimary, headerStyle: { backgroundColor: '#FFFFFF' } }}
+          />
+          <Stack.Screen
+            name="modals/add-school-note"
+            options={{ presentation: 'modal', headerShown: true, title: 'Novo Recado da Escola / Babá', headerTintColor: Colors.textPrimary, headerStyle: { backgroundColor: '#FFFFFF' } }}
+          />
         </Stack>
+
 
       </AppProvider>
     </SafeAreaProvider>

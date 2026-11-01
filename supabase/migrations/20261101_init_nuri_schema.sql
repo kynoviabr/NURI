@@ -515,4 +515,37 @@ FOR ALL USING (
     )
 );
 
+-- ==============================================================================
+-- MÓDULO CÍRCULO FAMILIAR & ACESSO BABÁ/ESCOLA (DE A A Z)
+-- ==============================================================================
+
+-- 23. DIÁRIO DE RECADOS ESCOLA E CUIDADOR
+CREATE TABLE IF NOT EXISTS public.school_notes (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    baby_id UUID NOT NULL REFERENCES public.babies(id) ON DELETE CASCADE,
+    date DATE NOT NULL DEFAULT CURRENT_DATE,
+    type TEXT NOT NULL CHECK (type IN ('entry_note', 'school_report', 'supplies_needed', 'incident')),
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    author_name TEXT NOT NULL,
+    author_role TEXT NOT NULL DEFAULT 'Responsável',
+    priority TEXT NOT NULL DEFAULT 'normal' CHECK (priority IN ('normal', 'important', 'urgent')),
+    supplies_list TEXT[],
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_school_notes_baby ON public.school_notes(baby_id, date DESC);
+
+ALTER TABLE public.school_notes ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Family and caregivers access school_notes" ON public.school_notes
+FOR ALL USING (
+    baby_id IN (
+        SELECT b.id FROM public.babies b
+        JOIN public.family_members fm ON fm.family_id = b.family_id
+        WHERE fm.user_id = auth.uid()
+    )
+);
+
+
 

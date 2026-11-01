@@ -19,8 +19,10 @@ import {
   SleepLog,
   TummyTimeLog,
   FirstMilestoneItem,
+  SchoolNote,
+  UserRole,
+  EmergencyPickup,
 } from '../types/database';
-
 
 import { calculateNextDose, calculateWHOWeightPercentile, calculateBabyAge } from '../utils/babyCalculations';
 
@@ -66,11 +68,60 @@ const INITIAL_FAMILY: Family = {
 };
 
 const INITIAL_MEMBERS: FamilyMember[] = [
-  { id: 'm1', family_id: 'f1', user_id: 'u1', role: 'admin', relationship_label: 'Mamãe (Marina)', can_post: true, can_edit_health: true },
-  { id: 'm2', family_id: 'f1', user_id: 'u2', role: 'admin', relationship_label: 'Papai (Lucas)', can_post: true, can_edit_health: true },
-  { id: 'm3', family_id: 'f1', user_id: 'u3', role: 'family', relationship_label: 'Vovó Vera', can_post: true, can_edit_health: false },
-  { id: 'm4', family_id: 'f1', user_id: 'u4', role: 'caregiver', relationship_label: 'Tia Sandra (Babá)', can_post: false, can_edit_health: false },
+  {
+    id: 'm1',
+    family_id: 'f1',
+    user_id: 'u1',
+    role: 'admin',
+    relationship_label: 'Mamãe (Marina)',
+    can_post: true,
+    can_view_routine: true,
+    can_edit_routine: true,
+    can_view_health: true,
+    can_edit_health: true,
+    can_manage_members: true,
+  },
+  {
+    id: 'm2',
+    family_id: 'f1',
+    user_id: 'u2',
+    role: 'admin',
+    relationship_label: 'Papai (Lucas)',
+    can_post: true,
+    can_view_routine: true,
+    can_edit_routine: true,
+    can_view_health: true,
+    can_edit_health: true,
+    can_manage_members: true,
+  },
+  {
+    id: 'm3',
+    family_id: 'f1',
+    user_id: 'u3',
+    role: 'family',
+    relationship_label: 'Vovó Vera',
+    can_post: true,
+    can_view_routine: true,
+    can_edit_routine: false,
+    can_view_health: true,
+    can_edit_health: false,
+    can_manage_members: false,
+  },
+  {
+    id: 'm4',
+    family_id: 'f1',
+    user_id: 'u4',
+    role: 'caregiver',
+    relationship_label: 'Tia Sandra (Babá)',
+    can_post: false,
+    can_view_routine: true,
+    can_edit_routine: true,
+    can_view_health: false,
+    can_edit_health: false,
+    can_manage_members: false,
+  },
 ];
+
 
 const INITIAL_MOMENTS: Moment[] = [
   {
@@ -550,6 +601,47 @@ const INITIAL_TUMMY_TIMES: TummyTimeLog[] = [
   },
 ];
 
+const INITIAL_SCHOOL_NOTES: SchoolNote[] = [
+  {
+    id: 'sn1',
+    baby_id: 'b1',
+    date: '2026-11-01',
+    type: 'entry_note',
+    title: '🎒 Recado de Entrada - Mamãe',
+    content: 'Théo acordou às 6h30, mamou no seio às 7h15. Tomou as gotinhas de vitamina D. Trouxe agasalho extra na mochila.',
+    author_name: 'Marina (Mamãe)',
+    author_role: 'Mãe',
+    priority: 'normal',
+    supplies_list: ['Agasalho extra', '2 paninhos de boca'],
+    created_at: '2026-11-01T07:45:00Z',
+  },
+  {
+    id: 'sn2',
+    baby_id: 'b1',
+    date: '2026-10-31',
+    type: 'school_report',
+    title: '📋 Relatório do Berçário',
+    content: 'Dia super tranquilo! Almoçou toda a papinha de mandioquinha com legumes, participou da recreação no tapete sensorial e dormiu uma soneca deliciosa de 1h30.',
+    author_name: 'Profª Juliana',
+    author_role: 'Escola / Berçário',
+    priority: 'normal',
+    created_at: '2026-10-31T16:30:00Z',
+  },
+  {
+    id: 'sn3',
+    baby_id: 'b1',
+    date: '2026-10-30',
+    type: 'supplies_needed',
+    title: '📦 Reposição de Itens da Mochila',
+    content: 'Favor enviar na mochila na próxima segunda-feira: fraldas descartáveis tamanho M e um pacote novo de lenços umedecidos.',
+    author_name: 'Tia Sandra (Babá)',
+    author_role: 'Cuidadora',
+    priority: 'important',
+    supplies_list: ['Pacote Fralda M', 'Lenço umedecido hipoalergênico'],
+    created_at: '2026-10-30T17:00:00Z',
+  },
+];
+
 interface AppContextType {
   baby: Baby;
   setBaby: (baby: Baby) => void;
@@ -601,7 +693,16 @@ interface AppContextType {
   addMomentReaction: (momentId: string, reaction: { emoji?: string; comment?: string; user_name: string }) => void;
   firstMilestones: FirstMilestoneItem[];
   updateFirstMilestone: (key: string, data: { achieved_date: string; photo_url?: string; notes?: string; logged_by?: string }) => void;
+
+  // Módulo Círculo Familiar & Escola/Babá (De A a Z)
+  schoolNotes: SchoolNote[];
+  addSchoolNote: (data: Omit<SchoolNote, 'id' | 'created_at' | 'baby_id'>) => void;
+  addFamilyMember: (data: { relationship_label: string; role: UserRole; can_post: boolean; can_view_routine: boolean; can_edit_routine: boolean; can_view_health: boolean; can_edit_health: boolean }) => void;
+  updateMemberRole: (memberId: string, role: UserRole) => void;
+  removeFamilyMember: (memberId: string) => void;
+  updateEmergencyShare: (data: Partial<EmergencyShare>) => void;
 }
+
 
 
 
@@ -610,7 +711,7 @@ const AppContext = createContext<AppContextType | null>(null);
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [baby, setBaby] = useState<Baby>(INITIAL_BABY);
   const [family] = useState<Family>(INITIAL_FAMILY);
-  const [members] = useState<FamilyMember[]>(INITIAL_MEMBERS);
+  const [members, setMembers] = useState<FamilyMember[]>(INITIAL_MEMBERS);
   const [moments, setMoments] = useState<Moment[]>(INITIAL_MOMENTS);
   
   // Saúde
@@ -618,7 +719,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [growthLogs, setGrowthLogs] = useState<GrowthLog[]>(INITIAL_GROWTH_LOGS);
   const [medicationLogs, setMedicationLogs] = useState<MedicationLog[]>(INITIAL_MEDICATIONS);
   const [appointments, setAppointments] = useState<MedicalAppointment[]>(INITIAL_APPOINTMENTS);
-  const [emergencyShare] = useState<EmergencyShare>(INITIAL_EMERGENCY_SHARE);
+  const [emergencyShare, setEmergencyShare] = useState<EmergencyShare>(INITIAL_EMERGENCY_SHARE);
 
   // Gestação
   const [ultrasounds, setUltrasounds] = useState<UltrasoundRecord[]>(INITIAL_ULTRASOUNDS);
@@ -635,6 +736,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // Memórias & Álbum
   const [firstMilestones, setFirstMilestones] = useState<FirstMilestoneItem[]>(INITIAL_FIRST_MILESTONES);
+
+  // Escola & Cuidador
+  const [schoolNotes, setSchoolNotes] = useState<SchoolNote[]>(INITIAL_SCHOOL_NOTES);
+
 
 
 
@@ -894,6 +999,72 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     );
   };
 
+  // Círculo Familiar & Escola Handlers
+  const addSchoolNote = (data: Omit<SchoolNote, 'id' | 'created_at' | 'baby_id'>) => {
+    const newNote: SchoolNote = {
+      ...data,
+      id: `sn_${Date.now()}`,
+      baby_id: baby.id,
+      created_at: new Date().toISOString(),
+    };
+    setSchoolNotes((prev) => [newNote, ...prev]);
+  };
+
+  const addFamilyMember = (data: {
+    relationship_label: string;
+    role: UserRole;
+    can_post: boolean;
+    can_view_routine: boolean;
+    can_edit_routine: boolean;
+    can_view_health: boolean;
+    can_edit_health: boolean;
+  }) => {
+    const newMember: FamilyMember = {
+      id: `m_${Date.now()}`,
+      family_id: family.id,
+      user_id: `u_${Date.now()}`,
+      relationship_label: data.relationship_label,
+      role: data.role,
+      can_post: data.can_post,
+      can_view_routine: data.can_view_routine,
+      can_edit_routine: data.can_edit_routine,
+      can_view_health: data.can_view_health,
+      can_edit_health: data.can_edit_health,
+      can_manage_members: data.role === 'admin',
+    };
+    setMembers((prev) => [...prev, newMember]);
+  };
+
+  const updateMemberRole = (memberId: string, role: UserRole) => {
+    setMembers((prev) =>
+      prev.map((m) =>
+        m.id === memberId
+          ? {
+              ...m,
+              role,
+              can_post: role === 'admin' || role === 'family',
+              can_edit_health: role === 'admin',
+              can_view_health: role === 'admin' || role === 'family',
+              can_view_routine: true,
+              can_edit_routine: role === 'admin' || role === 'caregiver',
+              can_manage_members: role === 'admin',
+            }
+          : m
+      )
+    );
+  };
+
+  const removeFamilyMember = (memberId: string) => {
+    setMembers((prev) => prev.filter((m) => m.id !== memberId));
+  };
+
+  const updateEmergencyShare = (data: Partial<EmergencyShare>) => {
+    setEmergencyShare((prev) => ({
+      ...prev,
+      ...data,
+    }));
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -939,12 +1110,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         firstMilestones,
         updateFirstMilestone,
         addMomentReaction,
+        schoolNotes,
+        addSchoolNote,
+        addFamilyMember,
+        updateMemberRole,
+        removeFamilyMember,
+        updateEmergencyShare,
       }}
     >
       {children}
     </AppContext.Provider>
   );
 };
+
 
 
 
