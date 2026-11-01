@@ -8,7 +8,7 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Users, Copy, Share2, ShieldCheck, Heart, UserPlus, ChevronRight } from 'lucide-react-native';
+import { Users, Copy, Share2, ShieldCheck, Heart, UserPlus, ChevronRight, Lock } from 'lucide-react-native';
 import { useApp } from '../../src/context/AppContext';
 import { Colors, Spacing, Radius, Shadows } from '../../src/constants/theme';
 
@@ -18,7 +18,7 @@ export default function CircleScreen() {
   const handleCopyCode = () => {
     Alert.alert(
       'Código Copiado!',
-      `O código da família ${family.invite_code} foi copiado. Envie para os avós e tios no WhatsApp!`,
+      `O código da família ${family.invite_code} foi copiado. Envie para os avós e padrinhos no WhatsApp!`,
       [{ text: 'Maravilha!' }]
     );
   };
@@ -27,7 +27,7 @@ export default function CircleScreen() {
     Alert.alert(
       'Compartilhar Convite',
       `"Olá! Baixe o app Nuri para acompanhar o crescimento do nosso bebê de forma privada e segura. Nosso código de família é: ${family.invite_code}"`,
-      [{ text: 'Simular envio' }]
+      [{ text: 'OK' }]
     );
   };
 
@@ -35,106 +35,115 @@ export default function CircleScreen() {
     <SafeAreaView style={styles.container} edges={['top']}>
       {/* HEADER */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Círculo Familiar</Text>
-        <Text style={styles.headerSubtitle}>Rede social 100% privada da família</Text>
+        <View>
+          <Text style={styles.headerTitle}>Círculo Familiar</Text>
+          <Text style={styles.headerSubtitle}>Rede social 100% privada da família</Text>
+        </View>
+        <View style={styles.privatePill}>
+          <Lock size={12} color={Colors.primary} />
+          <Text style={styles.privatePillText}>Fechado</Text>
+        </View>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* CARTÃO DO CÓDIGO DE CONVITE */}
-        <View style={styles.inviteCard}>
-          <View style={styles.inviteHeader}>
-            <View style={styles.inviteIconCircle}>
+        {/* CARTÃO DE CONVITE DA FAMÍLIA (ESTILO TICKET PREMIUM) */}
+        <View style={styles.ticketCard}>
+          <View style={styles.ticketHeader}>
+            <View style={styles.ticketIconCircle}>
               <Users size={22} color={Colors.primary} />
             </View>
-            <View style={styles.inviteHeaderText}>
-              <Text style={styles.inviteFamilyName}>{family.name}</Text>
-              <Text style={styles.inviteFamilySub}>Convide quem você mais ama</Text>
+            <View style={styles.ticketHeaderTextWrap}>
+              <Text style={styles.ticketFamilyName}>{family.name}</Text>
+              <Text style={styles.ticketSub}>Convide quem você mais ama</Text>
             </View>
           </View>
 
-          <View style={styles.codeContainer}>
-            <Text style={styles.codeLabel}>CÓDIGO DE ACESSO DA FAMÍLIA</Text>
+          <View style={styles.codeBox}>
+            <Text style={styles.codeBoxLabel}>CÓDIGO DE ENTRADA EXCLUSIVO</Text>
             <View style={styles.codeRow}>
-              <Text style={styles.codeText}>{family.invite_code}</Text>
-              <TouchableOpacity style={styles.copyBtn} onPress={handleCopyCode} activeOpacity={0.7}>
-                <Copy size={16} color={Colors.primary} />
-                <Text style={styles.copyBtnText}>Copiar</Text>
+              <Text style={styles.codeString}>{family.invite_code}</Text>
+              <TouchableOpacity style={styles.copyButton} onPress={handleCopyCode} activeOpacity={0.7}>
+                <Copy size={15} color={Colors.primary} />
+                <Text style={styles.copyButtonText}>Copiar</Text>
               </TouchableOpacity>
             </View>
           </View>
 
-          <TouchableOpacity style={styles.shareBtn} onPress={handleShareInvite} activeOpacity={0.8}>
-            <Share2 size={16} color={Colors.textInverted} />
-            <Text style={styles.shareBtnText}>Enviar Convite pelo WhatsApp</Text>
+          <TouchableOpacity style={styles.whatsappBtn} onPress={handleShareInvite} activeOpacity={0.85}>
+            <Share2 size={16} color="#FFFFFF" />
+            <Text style={styles.whatsappBtnText}>Convidar Avós e Padrinhos via WhatsApp</Text>
           </TouchableOpacity>
         </View>
 
-        {/* LISTA DE MEMBROS ATUAIS */}
+        {/* LISTA DE MEMBROS CONECTADOS */}
         <View style={styles.membersSection}>
-          <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionTitle}>Membros Conectados ({members.length})</Text>
-            <TouchableOpacity style={styles.addMemberBtn} onPress={handleShareInvite}>
+          <View style={styles.membersHeaderRow}>
+            <View>
+              <Text style={styles.sectionTitle}>Membros Conectados ({members.length})</Text>
+              <Text style={styles.sectionSubtitle}>Quem tem acesso às fotos e momentos</Text>
+            </View>
+            <TouchableOpacity style={styles.inviteMiniBtn} onPress={handleShareInvite}>
               <UserPlus size={14} color={Colors.primary} />
-              <Text style={styles.addMemberText}>Convidar</Text>
+              <Text style={styles.inviteMiniText}>Convidar</Text>
             </TouchableOpacity>
           </View>
 
-          <View style={styles.membersList}>
+          <View style={styles.membersListCard}>
             {members.map((member) => (
-              <View key={member.id} style={styles.memberCard}>
-                <View style={styles.memberAvatar}>
-                  <Text style={styles.memberAvatarText}>
+              <View key={member.id} style={styles.memberRow}>
+                <View style={styles.memberAvatarCircle}>
+                  <Text style={styles.memberAvatarLetter}>
                     {member.relationship_label.charAt(0)}
                   </Text>
                 </View>
 
-                <View style={styles.memberInfo}>
-                  <Text style={styles.memberRelation}>{member.relationship_label}</Text>
-                  <View style={styles.permissionsRow}>
+                <View style={styles.memberMeta}>
+                  <Text style={styles.memberRelationName}>{member.relationship_label}</Text>
+                  <View style={styles.rolesRow}>
                     <View
                       style={[
-                        styles.roleBadge,
+                        styles.roleTag,
                         member.role === 'admin'
-                          ? styles.roleBadgeAdmin
+                          ? styles.roleTagAdmin
                           : member.role === 'caregiver'
-                          ? styles.roleBadgeCaregiver
-                          : styles.roleBadgeFamily,
+                          ? styles.roleTagCaregiver
+                          : styles.roleTagFamily,
                       ]}
                     >
                       <Text
                         style={[
-                          styles.roleBadgeText,
+                          styles.roleTagText,
                           member.role === 'admin'
-                            ? styles.roleBadgeTextAdmin
+                            ? styles.roleTagTextAdmin
                             : member.role === 'caregiver'
-                            ? styles.roleBadgeTextCaregiver
-                            : styles.roleBadgeTextFamily,
+                            ? styles.roleTagTextCaregiver
+                            : styles.roleTagTextFamily,
                         ]}
                       >
                         {member.role === 'admin'
                           ? 'Administrador (Pai/Mãe)'
                           : member.role === 'caregiver'
                           ? 'Cuidador / Escola'
-                          : 'Família'}
+                          : 'Círculo Familiar'}
                       </Text>
                     </View>
                   </View>
                 </View>
 
-                <ChevronRight size={16} color={Colors.textMuted} />
+                <ChevronRight size={16} color="#D8D0C5" />
               </View>
             ))}
           </View>
         </View>
 
-        {/* PRIVACIDADE E SEGURANÇA (GARANTIA NURI) */}
-        <View style={styles.privacyBanner}>
-          <ShieldCheck size={24} color={Colors.primary} />
-          <View style={styles.privacyContent}>
-            <Text style={styles.privacyTitle}>Privacidade Infantil e Segurança</Text>
-            <Text style={styles.privacyText}>
-              Fotos, vídeos e dados médicos são criptografados. Somente pessoas com o código da
-              família aprovado pelos pais têm acesso à linha do tempo.
+        {/* COMPLIANCE E PRIVACIDADE INFANTIL */}
+        <View style={styles.securityBox}>
+          <ShieldCheck size={26} color={Colors.primary} />
+          <View style={styles.securityTextWrap}>
+            <Text style={styles.securityTitle}>Privacidade Infantil e Segurança</Text>
+            <Text style={styles.securityDesc}>
+              Zero algoritmos, zero anúncios e zero exposição pública no Google. Suas memórias
+              familiares pertencem exclusivamente a você e aos parentes que você convidar.
             </Text>
           </View>
         </View>
@@ -149,42 +158,60 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    backgroundColor: Colors.surface,
+    paddingVertical: 14,
+    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: '800',
     color: Colors.textPrimary,
+    letterSpacing: -0.3,
   },
   headerSubtitle: {
-    fontSize: 13,
+    fontSize: 12,
     color: Colors.textSecondary,
     marginTop: 2,
   },
+  privatePill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: Colors.primaryLight,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: Radius.full,
+  },
+  privatePillText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: Colors.primary,
+  },
   scrollContent: {
     padding: Spacing.md,
-    paddingBottom: 40,
+    paddingBottom: 50,
   },
-  inviteCard: {
-    backgroundColor: Colors.surface,
-    borderRadius: Radius.lg,
-    padding: Spacing.md,
+  ticketCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: Radius.xl,
+    padding: 18,
     borderWidth: 1,
     borderColor: Colors.border,
     marginBottom: Spacing.lg,
     ...Shadows.card,
   },
-  inviteHeader: {
+  ticketHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.sm,
-    marginBottom: Spacing.md,
+    gap: 12,
+    marginBottom: 16,
   },
-  inviteIconCircle: {
+  ticketIconCircle: {
     width: 44,
     height: 44,
     borderRadius: Radius.full,
@@ -192,28 +219,30 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  inviteHeaderText: {
+  ticketHeaderTextWrap: {
     flex: 1,
   },
-  inviteFamilyName: {
+  ticketFamilyName: {
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '800',
     color: Colors.textPrimary,
   },
-  inviteFamilySub: {
+  ticketSub: {
     fontSize: 12,
     color: Colors.textSecondary,
-    marginTop: 2,
+    marginTop: 1,
   },
-  codeContainer: {
-    backgroundColor: Colors.surfaceSubtle,
+  codeBox: {
+    backgroundColor: '#FAF7F2',
     borderRadius: Radius.md,
-    padding: Spacing.sm,
-    marginBottom: Spacing.md,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#ECE4D6',
+    marginBottom: 14,
   },
-  codeLabel: {
+  codeBoxLabel: {
     fontSize: 10,
-    fontWeight: '700',
+    fontWeight: '800',
     color: Colors.textMuted,
     letterSpacing: 0.5,
     marginBottom: 4,
@@ -223,153 +252,168 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  codeText: {
-    fontSize: 20,
+  codeString: {
+    fontSize: 22,
     fontWeight: '900',
     color: Colors.primaryDark,
     letterSpacing: 2,
   },
-  copyBtn: {
+  copyButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: Radius.sm,
+    borderWidth: 1,
+    borderColor: '#E2D8C7',
+    ...Shadows.subtle,
+  },
+  copyButtonText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: Colors.primary,
+  },
+  whatsappBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: Colors.primary,
+    paddingVertical: 13,
+    borderRadius: Radius.md,
+    ...Shadows.subtle,
+  },
+  whatsappBtnText: {
+    fontSize: 13.5,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  membersSection: {
+    marginBottom: Spacing.lg,
+  },
+  membersHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  sectionTitle: {
+    fontSize: 17,
+    fontWeight: '800',
+    color: Colors.textPrimary,
+    letterSpacing: -0.3,
+  },
+  sectionSubtitle: {
+    fontSize: 12,
+    color: Colors.textSecondary,
+    marginTop: 1,
+  },
+  inviteMiniBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
     backgroundColor: Colors.primaryLight,
     paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: Radius.sm,
+    paddingVertical: 4,
+    borderRadius: Radius.full,
   },
-  copyBtnText: {
+  inviteMiniText: {
     fontSize: 12,
     fontWeight: '700',
     color: Colors.primary,
   },
-  shareBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    backgroundColor: Colors.primary,
-    paddingVertical: 12,
-    borderRadius: Radius.md,
-  },
-  shareBtnText: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: Colors.textInverted,
-  },
-  membersSection: {
-    marginBottom: Spacing.lg,
-  },
-  sectionHeaderRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: Spacing.sm,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: Colors.textPrimary,
-  },
-  addMemberBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  addMemberText: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: Colors.primary,
-  },
-  membersList: {
-    backgroundColor: Colors.surface,
-    borderRadius: Radius.lg,
+  membersListCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: Radius.xl,
     borderWidth: 1,
     borderColor: Colors.border,
     overflow: 'hidden',
     ...Shadows.subtle,
   },
-  memberCard: {
+  memberRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: Spacing.md,
+    padding: 14,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: '#F5EFE6',
+    gap: 12,
   },
-  memberAvatar: {
-    width: 38,
-    height: 38,
+  memberAvatarCircle: {
+    width: 40,
+    height: 40,
     borderRadius: Radius.full,
     backgroundColor: Colors.secondaryLight,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: Spacing.sm,
   },
-  memberAvatarText: {
+  memberAvatarLetter: {
     fontSize: 16,
     fontWeight: '800',
     color: Colors.secondary,
   },
-  memberInfo: {
+  memberMeta: {
     flex: 1,
   },
-  memberRelation: {
+  memberRelationName: {
     fontSize: 14,
     fontWeight: '700',
     color: Colors.textPrimary,
   },
-  permissionsRow: {
-    marginTop: 2,
+  rolesRow: {
+    marginTop: 3,
   },
-  roleBadge: {
+  roleTag: {
     alignSelf: 'flex-start',
-    paddingHorizontal: 6,
+    paddingHorizontal: 7,
     paddingVertical: 2,
-    borderRadius: Radius.sm,
+    borderRadius: Radius.xs,
   },
-  roleBadgeAdmin: {
+  roleTagAdmin: {
     backgroundColor: Colors.primaryLight,
   },
-  roleBadgeFamily: {
+  roleTagFamily: {
     backgroundColor: Colors.secondaryLight,
   },
-  roleBadgeCaregiver: {
+  roleTagCaregiver: {
     backgroundColor: Colors.infoLight,
   },
-  roleBadgeText: {
+  roleTagText: {
     fontSize: 10,
     fontWeight: '700',
   },
-  roleBadgeTextAdmin: {
+  roleTagTextAdmin: {
     color: Colors.primaryDark,
   },
-  roleBadgeTextFamily: {
+  roleTagTextFamily: {
     color: Colors.secondaryDark,
   },
-  roleBadgeTextCaregiver: {
+  roleTagTextCaregiver: {
     color: Colors.info,
   },
-  privacyBanner: {
+  securityBox: {
     flexDirection: 'row',
-    gap: Spacing.sm,
-    backgroundColor: Colors.surfaceSubtle,
-    padding: Spacing.md,
-    borderRadius: Radius.lg,
+    gap: 12,
+    backgroundColor: '#FFFFFF',
+    padding: 16,
+    borderRadius: Radius.xl,
     borderWidth: 1,
     borderColor: Colors.border,
+    ...Shadows.subtle,
   },
-  privacyContent: {
+  securityTextWrap: {
     flex: 1,
   },
-  privacyTitle: {
-    fontSize: 13,
-    fontWeight: '700',
+  securityTitle: {
+    fontSize: 13.5,
+    fontWeight: '800',
     color: Colors.textPrimary,
-    marginBottom: 2,
+    marginBottom: 4,
   },
-  privacyText: {
+  securityDesc: {
     fontSize: 12,
     color: Colors.textSecondary,
-    lineHeight: 16,
+    lineHeight: 17,
   },
 });

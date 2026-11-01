@@ -14,10 +14,11 @@ import {
   CheckCircle2,
   Clock,
   Phone,
-  FileText,
   ChevronRight,
   Syringe,
   Activity,
+  HeartPulse,
+  AlertTriangle,
 } from 'lucide-react-native';
 import { useApp } from '../../src/context/AppContext';
 import { Colors, Spacing, Radius, Shadows } from '../../src/constants/theme';
@@ -39,12 +40,12 @@ export default function HealthScreen() {
   const handleApplyVaccine = (recordId: string, vaccineName: string) => {
     Alert.alert(
       'Confirmar Aplicação',
-      `Deseja marcar a vacina ${vaccineName} como aplicada hoje?`,
+      `Marcar a vacina ${vaccineName} como aplicada hoje?`,
       [
         { text: 'Cancelar', style: 'cancel' },
         {
           text: 'Confirmar',
-          onPress: () => markVaccineAsApplied(recordId, 'Posto de Saúde Central'),
+          onPress: () => markVaccineAsApplied(recordId, 'Posto de Saúde Municipal'),
         },
       ]
     );
@@ -54,162 +55,189 @@ export default function HealthScreen() {
     <SafeAreaView style={styles.container} edges={['top']}>
       {/* HEADER */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Caderneta de Saúde</Text>
-        <Text style={styles.headerSubtitle}>Vacinas, dados vitais e contatos médicos</Text>
+        <View>
+          <Text style={styles.headerTitle}>Caderneta de Saúde</Text>
+          <Text style={styles.headerSubtitle}>Vacinas do SUS/SBIm, crescimento e pediatria</Text>
+        </View>
+        <View style={styles.healthStatusPill}>
+          <View style={styles.greenPulseDot} />
+          <Text style={styles.healthStatusText}>Em dia</Text>
+        </View>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* CARTÃO DE EMERGÊNCIA & ESCOLA (DESTAQUE RÁPIDO) */}
+        {/* PASSE ESCOLAR & CUIDADOR (CARTÃO HEROICO) */}
         <TouchableOpacity
-          style={styles.emergencyCard}
+          style={styles.schoolCard}
           onPress={() => router.push('/modals/caregiver-card')}
-          activeOpacity={0.8}
+          activeOpacity={0.85}
         >
-          <View style={styles.emergencyIconWrap}>
-            <ShieldAlert size={24} color={Colors.secondary} />
+          <View style={styles.schoolIconCircle}>
+            <ShieldAlert size={22} color={Colors.secondary} />
           </View>
-          <View style={styles.emergencyInfo}>
-            <Text style={styles.emergencyTitle}>Passe Escolar & Ficha de Cuidador</Text>
-            <Text style={styles.emergencyDesc}>
-              Alergias, remédios autorizados e lista de quem pode buscar na escola
+          <View style={styles.schoolCardInfo}>
+            <Text style={styles.schoolCardTitle}>Passe Escolar & Cuidador</Text>
+            <Text style={styles.schoolCardSub}>
+              Ficha de emergência, alergias e lista de quem pode buscar na creche
             </Text>
           </View>
           <ChevronRight size={18} color={Colors.secondary} />
         </TouchableOpacity>
 
-        {/* ALERGIA E TIPO SANGUÍNEO */}
-        <View style={styles.vitalCard}>
-          <View style={styles.vitalItem}>
-            <Text style={styles.vitalLabel}>Tipo Sanguíneo</Text>
-            <Text style={styles.vitalValue}>{baby.blood_type || 'Não informado'}</Text>
+        {/* DADOS VITAIS: TIPO SANGUÍNEO & ALERGIAS */}
+        <View style={styles.vitalsGrid}>
+          <View style={styles.vitalCard}>
+            <Text style={styles.vitalLabel}>TIPO SANGUÍNEO</Text>
+            <Text style={styles.vitalValueBig}>{baby.blood_type || 'O+'}</Text>
+            <Text style={styles.vitalSub}>Fator Rh Positivo</Text>
           </View>
-          <View style={styles.dividerVertical} />
-          <View style={styles.vitalItem}>
-            <Text style={styles.vitalLabel}>Alergias Conhecidas</Text>
-            <Text style={[styles.vitalValue, { color: Colors.danger }]}>
+
+          <View style={[styles.vitalCard, styles.vitalCardAllergy]}>
+            <View style={styles.allergyHeader}>
+              <AlertTriangle size={14} color={Colors.danger} />
+              <Text style={styles.allergyLabel}>ALERGIAS</Text>
+            </View>
+            <Text style={styles.allergyText} numberOfLines={2}>
               {baby.allergies.length > 0 ? baby.allergies.join(', ') : 'Nenhuma relatada'}
             </Text>
+            <Text style={styles.allergyAlertSub}>Atenção redobrada</Text>
           </View>
         </View>
 
-        {/* CONTROLE DE CRESCIMENTO (CURVAS OMS RESUMO) */}
-        <View style={styles.growthSummaryCard}>
-          <View style={styles.growthHeader}>
-            <View style={styles.growthHeaderLeft}>
+        {/* CRESCIMENTO: CURVAS OMS */}
+        <View style={styles.growthCard}>
+          <View style={styles.growthTop}>
+            <View style={styles.growthTitleRow}>
               <Activity size={18} color={Colors.primary} />
-              <Text style={styles.growthTitle}>Última Medição Pediátrica</Text>
+              <Text style={styles.growthTitle}>Curvas de Crescimento (OMS)</Text>
             </View>
             <Text style={styles.growthDate}>15 de Outubro</Text>
           </View>
-          <View style={styles.growthMetricsRow}>
-            <View style={styles.metricBox}>
-              <Text style={styles.metricVal}>6.25 kg</Text>
-              <Text style={styles.metricSub}>Peso (p50 OMS)</Text>
+
+          <View style={styles.metricsRow}>
+            <View style={styles.metricItem}>
+              <Text style={styles.metricNumber}>6.25 <Text style={styles.metricUnit}>kg</Text></Text>
+              <Text style={styles.metricName}>Peso</Text>
+              <View style={styles.percentilePill}>
+                <Text style={styles.percentilePillText}>p50 (Ideal)</Text>
+              </View>
             </View>
-            <View style={styles.metricBox}>
-              <Text style={styles.metricVal}>61.5 cm</Text>
-              <Text style={styles.metricSub}>Comprimento</Text>
+
+            <View style={styles.metricDivider} />
+
+            <View style={styles.metricItem}>
+              <Text style={styles.metricNumber}>61.5 <Text style={styles.metricUnit}>cm</Text></Text>
+              <Text style={styles.metricName}>Comprimento</Text>
+              <View style={styles.percentilePill}>
+                <Text style={styles.percentilePillText}>p55 (Normal)</Text>
+              </View>
             </View>
-            <View style={styles.metricBox}>
-              <Text style={styles.metricVal}>40.2 cm</Text>
-              <Text style={styles.metricSub}>Perímetro Cefálico</Text>
+
+            <View style={styles.metricDivider} />
+
+            <View style={styles.metricItem}>
+              <Text style={styles.metricNumber}>40.2 <Text style={styles.metricUnit}>cm</Text></Text>
+              <Text style={styles.metricName}>Cefálico</Text>
+              <View style={styles.percentilePill}>
+                <Text style={styles.percentilePillText}>p50 (Normal)</Text>
+              </View>
             </View>
           </View>
         </View>
 
         {/* CALENDÁRIO VACINAL NACIONAL */}
-        <View style={styles.vaccineSection}>
-          <View style={styles.vaccineSectionHeader}>
+        <View style={styles.vaccinesSection}>
+          <View style={styles.vaccinesHeader}>
             <View>
-              <Text style={styles.sectionTitle}>Calendário de Vacinas</Text>
-              <Text style={styles.sectionSubtitle}>
-                {appliedCount} aplicadas • {pendingCount} próximas doses
+              <Text style={styles.sectionHeading}>Calendário de Vacinas</Text>
+              <Text style={styles.sectionSubHeading}>
+                {appliedCount} doses tomadas • {pendingCount} próximas
               </Text>
             </View>
 
-            {/* Abas de filtro */}
-            <View style={styles.filterGroup}>
+            {/* Filtros em Pílulas */}
+            <View style={styles.filterPills}>
               <TouchableOpacity
-                style={[styles.filterChip, filter === 'all' && styles.filterChipActive]}
+                style={[styles.filterBtn, filter === 'all' && styles.filterBtnActive]}
                 onPress={() => setFilter('all')}
               >
-                <Text style={[styles.filterText, filter === 'all' && styles.filterTextActive]}>Todas</Text>
+                <Text style={[styles.filterBtnText, filter === 'all' && styles.filterBtnTextActive]}>Todas</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.filterChip, filter === 'pending' && styles.filterChipActive]}
+                style={[styles.filterBtn, filter === 'pending' && styles.filterBtnActive]}
                 onPress={() => setFilter('pending')}
               >
-                <Text style={[styles.filterText, filter === 'pending' && styles.filterTextActive]}>Pendentes</Text>
+                <Text style={[styles.filterBtnText, filter === 'pending' && styles.filterBtnTextActive]}>Pendentes</Text>
               </TouchableOpacity>
             </View>
           </View>
 
-          {/* LISTA DE VACINAS */}
-          <View style={styles.vaccinesList}>
+          {/* Lista de Vacinas Estilo Cartão */}
+          <View style={styles.vaccineCardsList}>
             {filteredVaccines.map((record) => {
               const isApplied = record.status === 'applied';
 
               return (
-                <View key={record.id} style={styles.vaccineCard}>
-                  <View style={styles.vaccineRowTop}>
-                    <View style={styles.vaccineTitleGroup}>
-                      <View style={[styles.vaccineIconCircle, isApplied && styles.vaccineIconCircleApplied]}>
-                        <Syringe size={16} color={isApplied ? Colors.success : Colors.primary} />
+                <View key={record.id} style={styles.vaccineItemCard}>
+                  <View style={styles.vaccineCardTop}>
+                    <View style={styles.vaccineNameCol}>
+                      <View style={[styles.syringeCircle, isApplied && styles.syringeCircleApplied]}>
+                        <Syringe size={15} color={isApplied ? Colors.success : Colors.primary} />
                       </View>
-                      <View>
-                        <Text style={styles.vaccineName}>{record.vaccine.name}</Text>
-                        <Text style={styles.vaccineDisease}>{record.vaccine.target_disease}</Text>
+                      <View style={styles.vaccineTextWrap}>
+                        <Text style={styles.vaccineNameTitle}>{record.vaccine.name}</Text>
+                        <Text style={styles.vaccineTargetDisease} numberOfLines={1}>
+                          {record.vaccine.target_disease}
+                        </Text>
                       </View>
                     </View>
 
                     {isApplied ? (
-                      <View style={styles.statusBadgeApplied}>
-                        <CheckCircle2 size={12} color={Colors.success} />
-                        <Text style={styles.statusTextApplied}>Tomada</Text>
+                      <View style={styles.appliedPill}>
+                        <CheckCircle2 size={12} color={Colors.success} strokeWidth={2.5} />
+                        <Text style={styles.appliedPillText}>Tomada</Text>
                       </View>
                     ) : (
                       <TouchableOpacity
-                        style={styles.statusBadgePending}
+                        style={styles.pendingActionBtn}
                         onPress={() => handleApplyVaccine(record.id, record.vaccine.name)}
+                        activeOpacity={0.8}
                       >
-                        <Clock size={12} color={Colors.warning} />
-                        <Text style={styles.statusTextPending}>Registrar</Text>
+                        <Clock size={12} color={Colors.accent} />
+                        <Text style={styles.pendingActionText}>Registrar</Text>
                       </TouchableOpacity>
                     )}
                   </View>
 
-                  {isApplied ? (
-                    <View style={styles.appliedDetailsRow}>
-                      <Text style={styles.appliedDetailText}>
-                        Aplicada em: {record.applied_date} • {record.clinic_or_post}
-                      </Text>
-                      {record.batch_number && (
-                        <Text style={styles.batchText}>Lote: {record.batch_number}</Text>
-                      )}
-                    </View>
-                  ) : (
-                    <View style={styles.appliedDetailsRow}>
-                      <Text style={styles.scheduledDetailText}>
-                        Idade recomendada: {record.vaccine.recommended_age_months === 0 ? 'Ao nascer' : `${record.vaccine.recommended_age_months} meses`}
-                      </Text>
-                    </View>
-                  )}
+                  <View style={styles.vaccineFooter}>
+                    <Text style={styles.vaccineMetaInfo}>
+                      {isApplied
+                        ? `Aplicada em: ${record.applied_date} • ${record.clinic_or_post}`
+                        : `Idade recomendada: ${record.vaccine.recommended_age_months === 0 ? 'Ao nascer' : `${record.vaccine.recommended_age_months} meses`}`}
+                    </Text>
+                    {record.batch_number && (
+                      <Text style={styles.batchLabel}>Lote {record.batch_number}</Text>
+                    )}
+                  </View>
                 </View>
               );
             })}
           </View>
         </View>
 
-        {/* CONTATO DO PEDIATRA DE REFERÊNCIA */}
-        <View style={styles.doctorCard}>
-          <View style={styles.doctorInfo}>
-            <Text style={styles.doctorRole}>Pediatra de Referência</Text>
-            <Text style={styles.doctorName}>Dra. Camila Nogueira (CRM 142.890)</Text>
-            <Text style={styles.doctorClinic}>Clínica Pediátrica Crescer • Seg a Sex</Text>
+        {/* PEDIATRA DE REFERÊNCIA */}
+        <View style={styles.doctorWidget}>
+          <View style={styles.doctorAvatar}>
+            <Text style={styles.doctorAvatarText}>🩺</Text>
           </View>
-          <TouchableOpacity style={styles.callButton} activeOpacity={0.8}>
-            <Phone size={16} color={Colors.textInverted} />
-            <Text style={styles.callButtonText}>Ligar</Text>
+          <View style={styles.doctorInfo}>
+            <Text style={styles.doctorRoleLabel}>PEDIATRA DE CONFIANÇA</Text>
+            <Text style={styles.doctorName}>Dra. Camila Nogueira</Text>
+            <Text style={styles.doctorClinicName}>Clínica Pediátrica Crescer • CRM 142.890</Text>
+          </View>
+          <TouchableOpacity style={styles.callDoctorBtn} activeOpacity={0.8}>
+            <Phone size={15} color="#FFFFFF" />
+            <Text style={styles.callDoctorText}>Ligar</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -223,314 +251,401 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    backgroundColor: Colors.surface,
+    paddingVertical: 14,
+    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: '800',
     color: Colors.textPrimary,
+    letterSpacing: -0.3,
   },
   headerSubtitle: {
-    fontSize: 13,
+    fontSize: 12,
     color: Colors.textSecondary,
     marginTop: 2,
   },
-  scrollContent: {
-    padding: Spacing.md,
-    paddingBottom: 40,
-  },
-  emergencyCard: {
+  healthStatusPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.secondaryLight,
+    gap: 6,
+    backgroundColor: Colors.successLight,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: Radius.full,
+  },
+  greenPulseDot: {
+    width: 6,
+    height: 6,
+    borderRadius: Radius.full,
+    backgroundColor: Colors.success,
+  },
+  healthStatusText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: Colors.success,
+  },
+  scrollContent: {
     padding: Spacing.md,
-    borderRadius: Radius.lg,
+    paddingBottom: 50,
+  },
+  schoolCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFF7F4',
+    padding: 16,
+    borderRadius: Radius.xl,
     borderWidth: 1,
-    borderColor: Colors.secondary,
+    borderColor: '#FCDFD7',
     marginBottom: Spacing.md,
-    gap: Spacing.sm,
+    gap: 12,
     ...Shadows.subtle,
   },
-  emergencyIconWrap: {
+  schoolIconCircle: {
     width: 44,
     height: 44,
     borderRadius: Radius.full,
-    backgroundColor: Colors.surface,
+    backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#FCDFD7',
   },
-  emergencyInfo: {
+  schoolCardInfo: {
     flex: 1,
   },
-  emergencyTitle: {
-    fontSize: 14,
-    fontWeight: '700',
+  schoolCardTitle: {
+    fontSize: 14.5,
+    fontWeight: '800',
     color: Colors.secondaryDark,
   },
-  emergencyDesc: {
+  schoolCardSub: {
     fontSize: 12,
     color: Colors.textSecondary,
     marginTop: 2,
     lineHeight: 16,
   },
-  vitalCard: {
+  vitalsGrid: {
     flexDirection: 'row',
-    backgroundColor: Colors.surface,
+    gap: 12,
+    marginBottom: Spacing.md,
+  },
+  vitalCard: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
     borderRadius: Radius.lg,
-    padding: Spacing.md,
+    padding: 14,
     borderWidth: 1,
     borderColor: Colors.border,
-    marginBottom: Spacing.md,
     ...Shadows.subtle,
   },
-  vitalItem: {
-    flex: 1,
-    alignItems: 'center',
+  vitalCardAllergy: {
+    backgroundColor: '#FFF8F8',
+    borderColor: '#FEE2E2',
   },
   vitalLabel: {
-    fontSize: 12,
+    fontSize: 10,
+    fontWeight: '800',
     color: Colors.textMuted,
-    marginBottom: 4,
+    letterSpacing: 0.5,
   },
-  vitalValue: {
-    fontSize: 14,
-    fontWeight: '700',
+  vitalValueBig: {
+    fontSize: 22,
+    fontWeight: '900',
     color: Colors.textPrimary,
+    marginVertical: 2,
   },
-  dividerVertical: {
-    width: 1,
-    backgroundColor: Colors.border,
-    marginHorizontal: Spacing.sm,
+  vitalSub: {
+    fontSize: 11,
+    color: Colors.textSecondary,
   },
-  growthSummaryCard: {
-    backgroundColor: Colors.surface,
-    borderRadius: Radius.lg,
-    padding: Spacing.md,
+  allergyHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  allergyLabel: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: Colors.danger,
+    letterSpacing: 0.5,
+  },
+  allergyText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: Colors.danger,
+    marginTop: 4,
+    minHeight: 32,
+  },
+  allergyAlertSub: {
+    fontSize: 10.5,
+    color: '#9B2C2C',
+    fontWeight: '600',
+  },
+  growthCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: Radius.xl,
+    padding: 16,
     borderWidth: 1,
     borderColor: Colors.border,
     marginBottom: Spacing.md,
-    ...Shadows.subtle,
+    ...Shadows.card,
   },
-  growthHeader: {
+  growthTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: Spacing.sm,
+    marginBottom: 14,
   },
-  growthHeaderLeft: {
+  growthTitleRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
   },
   growthTitle: {
-    fontSize: 14,
-    fontWeight: '700',
+    fontSize: 14.5,
+    fontWeight: '800',
     color: Colors.textPrimary,
   },
   growthDate: {
-    fontSize: 12,
+    fontSize: 11.5,
     color: Colors.textMuted,
   },
-  growthMetricsRow: {
+  metricsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: Spacing.xs,
-  },
-  metricBox: {
-    flex: 1,
-    backgroundColor: Colors.surfaceSubtle,
-    padding: Spacing.sm,
-    borderRadius: Radius.md,
+    justifyContent: 'space-around',
     alignItems: 'center',
   },
-  metricVal: {
-    fontSize: 15,
-    fontWeight: '800',
+  metricItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  metricNumber: {
+    fontSize: 17,
+    fontWeight: '900',
     color: Colors.primaryDark,
   },
-  metricSub: {
-    fontSize: 11,
-    color: Colors.textSecondary,
-    marginTop: 2,
-  },
-  vaccineSection: {
-    marginBottom: Spacing.md,
-  },
-  vaccineSectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: Spacing.sm,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: Colors.textPrimary,
-  },
-  sectionSubtitle: {
-    fontSize: 12,
-    color: Colors.textSecondary,
-    marginTop: 2,
-  },
-  filterGroup: {
-    flexDirection: 'row',
-    gap: 6,
-  },
-  filterChip: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: Radius.full,
-    backgroundColor: Colors.surfaceSubtle,
-  },
-  filterChipActive: {
-    backgroundColor: Colors.primary,
-  },
-  filterText: {
+  metricUnit: {
     fontSize: 12,
     fontWeight: '600',
     color: Colors.textSecondary,
   },
-  filterTextActive: {
-    color: Colors.textInverted,
+  metricName: {
+    fontSize: 11,
+    color: Colors.textSecondary,
+    marginTop: 2,
   },
-  vaccinesList: {
-    gap: 8,
+  percentilePill: {
+    backgroundColor: Colors.primaryLight,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: Radius.xs,
+    marginTop: 4,
   },
-  vaccineCard: {
-    backgroundColor: Colors.surface,
-    borderRadius: Radius.md,
-    padding: Spacing.md,
+  percentilePillText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: Colors.primaryDark,
+  },
+  metricDivider: {
+    width: 1,
+    height: 36,
+    backgroundColor: '#F0EAE0',
+  },
+  vaccinesSection: {
+    marginBottom: Spacing.md,
+  },
+  vaccinesHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  sectionHeading: {
+    fontSize: 17,
+    fontWeight: '800',
+    color: Colors.textPrimary,
+    letterSpacing: -0.3,
+  },
+  sectionSubHeading: {
+    fontSize: 12,
+    color: Colors.textSecondary,
+    marginTop: 1,
+  },
+  filterPills: {
+    flexDirection: 'row',
+    gap: 6,
+  },
+  filterBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: Radius.full,
+    backgroundColor: '#EFEAE2',
+  },
+  filterBtnActive: {
+    backgroundColor: Colors.primary,
+  },
+  filterBtnText: {
+    fontSize: 11.5,
+    fontWeight: '700',
+    color: Colors.textSecondary,
+  },
+  filterBtnTextActive: {
+    color: '#FFFFFF',
+  },
+  vaccineCardsList: {
+    gap: 10,
+  },
+  vaccineItemCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: Radius.lg,
+    padding: 14,
     borderWidth: 1,
     borderColor: Colors.border,
     ...Shadows.subtle,
   },
-  vaccineRowTop: {
+  vaccineCardTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  vaccineTitleGroup: {
+  vaccineNameCol: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.sm,
+    gap: 10,
     flex: 1,
   },
-  vaccineIconCircle: {
-    width: 32,
-    height: 32,
+  syringeCircle: {
+    width: 34,
+    height: 34,
     borderRadius: Radius.full,
     backgroundColor: Colors.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  vaccineIconCircleApplied: {
+  syringeCircleApplied: {
     backgroundColor: Colors.successLight,
   },
-  vaccineName: {
-    fontSize: 14,
+  vaccineTextWrap: {
+    flex: 1,
+  },
+  vaccineNameTitle: {
+    fontSize: 13.5,
     fontWeight: '700',
     color: Colors.textPrimary,
   },
-  vaccineDisease: {
-    fontSize: 12,
+  vaccineTargetDisease: {
+    fontSize: 11.5,
     color: Colors.textSecondary,
+    marginTop: 1,
   },
-  statusBadgeApplied: {
+  appliedPill: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
     backgroundColor: Colors.successLight,
     paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: Radius.sm,
+    paddingVertical: 3,
+    borderRadius: Radius.xs,
   },
-  statusTextApplied: {
+  appliedPillText: {
     fontSize: 11,
     fontWeight: '700',
     color: Colors.success,
   },
-  statusBadgePending: {
+  pendingActionBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: Colors.warningLight,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    backgroundColor: Colors.accentLight,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
     borderRadius: Radius.sm,
+    borderWidth: 1,
+    borderColor: '#FBE8CC',
   },
-  statusTextPending: {
+  pendingActionText: {
     fontSize: 11,
-    fontWeight: '700',
-    color: Colors.warning,
+    fontWeight: '800',
+    color: Colors.accent,
   },
-  appliedDetailsRow: {
-    marginTop: Spacing.sm,
-    paddingTop: Spacing.xs,
+  vaccineFooter: {
+    marginTop: 10,
+    paddingTop: 8,
     borderTopWidth: 1,
-    borderTopColor: Colors.border,
+    borderTopColor: '#F6F2EC',
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  appliedDetailText: {
+  vaccineMetaInfo: {
     fontSize: 11,
     color: Colors.textMuted,
   },
-  batchText: {
+  batchLabel: {
     fontSize: 11,
     fontWeight: '600',
     color: Colors.textMuted,
   },
-  scheduledDetailText: {
-    fontSize: 11,
-    color: Colors.textSecondary,
-  },
-  doctorCard: {
+  doctorWidget: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: Colors.surface,
-    padding: Spacing.md,
-    borderRadius: Radius.lg,
+    backgroundColor: '#FFFFFF',
+    borderRadius: Radius.xl,
+    padding: 16,
     borderWidth: 1,
     borderColor: Colors.border,
-    ...Shadows.subtle,
+    gap: 12,
+    ...Shadows.card,
+  },
+  doctorAvatar: {
+    width: 44,
+    height: 44,
+    borderRadius: Radius.full,
+    backgroundColor: '#F3EFE9',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  doctorAvatarText: {
+    fontSize: 22,
   },
   doctorInfo: {
     flex: 1,
   },
-  doctorRole: {
-    fontSize: 11,
-    fontWeight: '700',
+  doctorRoleLabel: {
+    fontSize: 9.5,
+    fontWeight: '800',
     color: Colors.primary,
-    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   doctorName: {
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: '800',
     color: Colors.textPrimary,
-    marginTop: 2,
+    marginTop: 1,
   },
-  doctorClinic: {
-    fontSize: 12,
+  doctorClinicName: {
+    fontSize: 11.5,
     color: Colors.textSecondary,
-    marginTop: 2,
+    marginTop: 1,
   },
-  callButton: {
+  callDoctorBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 5,
     backgroundColor: Colors.primary,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: Radius.md,
   },
-  callButtonText: {
-    fontSize: 13,
+  callDoctorText: {
+    fontSize: 12.5,
     fontWeight: '700',
-    color: Colors.textInverted,
+    color: '#FFFFFF',
   },
 });

@@ -1,52 +1,53 @@
 /**
- * NURI DESIGN SYSTEM - TOKENS DE DESIGN & TEMA
- * Cores acolhedoras, tipografia e espaçamentos desenhados para famílias.
+ * NURI PREMIUM DESIGN SYSTEM
+ * Inspirado nas melhores referências internacionais de design escandinavo e parental (Apple Design / FamilyAlbum / Flo).
+ * Paleta calorosa, orgânica e aconchegante.
  */
 
 export const Colors = {
-  // Cores de Marca (Brand)
-  primary: '#5E8A75', // Verde Sálvia / Acolhimento & Saúde
-  primaryLight: '#EBF3EF',
-  primaryDark: '#446656',
+  // Cores de Marca (Aconchegantes e Naturais)
+  primary: '#436B53',        // Verde Floresta / Sálvia Profundo (Sofisticação & Cuidado)
+  primaryLight: '#EAF2EC',   // Verde Orvalho
+  primaryDark: '#2C4938',
 
-  secondary: '#D97757', // Terracota / Amor & Memórias
-  secondaryLight: '#FDF2EE',
-  secondaryDark: '#BA5939',
+  secondary: '#D9745B',      // Terracota / Pêssego Suave (Afeto & Família)
+  secondaryLight: '#FDF1ED',
+  secondaryDark: '#B85842',
 
-  accent: '#E6A740', // Mel / Celebrações & Mesversários
-  accentLight: '#FEF8EC',
+  accent: '#E99B35',         // Mel Dourado / Celebrações & Conquistas
+  accentLight: '#FDF6EB',
 
-  // Superfícies e Fundos
-  background: '#FDFBF7', // Creme suave (menos cansativo para os olhos dos pais à noite)
+  blush: '#F4A5A5',          // Rosa Chá
+  blushLight: '#FDF2F2',
+
+  // Fundos & Superfícies (Linho e Algodão)
+  background: '#F9F6F0',     // Linho Quente Suave (Anti-fadiga visual)
   surface: '#FFFFFF',
-  surfaceSubtle: '#F7F4EE',
-  border: '#EDE7DE',
-  borderDark: '#D8CEBF',
+  surfaceSubtle: '#F2EDE4',
+  surfaceMuted: '#EAE3D6',
 
-  // Textos
-  textPrimary: '#1F242E',
-  textSecondary: '#6B7280',
-  textMuted: '#9CA3AF',
+  border: '#ECE6DC',
+  borderLight: '#F4EFEB',
+
+  // Tipografia & Contraste
+  textPrimary: '#1E232B',    // Grafite Profundo (Muito mais elegante que preto puro)
+  textSecondary: '#6B7380',  // Cinza Quente
+  textMuted: '#9BA3AF',
   textInverted: '#FFFFFF',
 
-  // Estados de Saúde & Alertas
-  success: '#38A169',
-  successLight: '#E6F4EA',
-  warning: '#DD6B20',
-  warningLight: '#FEEBC8',
-  danger: '#E53E3E',
-  dangerLight: '#FED7D7',
-  info: '#3182CE',
-  infoLight: '#EBF8FF',
-
-  // Papéis de Família (Badges)
-  roleParent: '#5E8A75',
-  roleFamily: '#D97757',
-  roleCaregiver: '#3182CE',
-  roleDoctor: '#805AD5',
+  // Estados & Saúde
+  success: '#2E8555',
+  successLight: '#E8F5EE',
+  warning: '#D97706',
+  warningLight: '#FEF3C7',
+  danger: '#DC2626',
+  dangerLight: '#FEE2E2',
+  info: '#2563EB',
+  infoLight: '#EFF6FF',
 };
 
 export const Spacing = {
+  xxs: 2,
   xs: 4,
   sm: 8,
   md: 16,
@@ -56,33 +57,34 @@ export const Spacing = {
 };
 
 export const Radius = {
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 24,
+  xs: 6,
+  sm: 10,
+  md: 14,
+  lg: 20,
+  xl: 28,
   full: 9999,
 };
 
 export const Shadows = {
   subtle: {
-    shadowColor: '#000',
+    shadowColor: '#3A3025',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
-    shadowRadius: 6,
+    shadowRadius: 8,
     elevation: 2,
   },
   card: {
-    shadowColor: '#2D3142',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
+    shadowColor: '#2D261E',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.07,
+    shadowRadius: 16,
     elevation: 4,
   },
   floating: {
-    shadowColor: '#5E8A75',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.15,
-    shadowRadius: 16,
+    shadowColor: '#436B53',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.16,
+    shadowRadius: 20,
     elevation: 8,
   },
 };
