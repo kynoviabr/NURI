@@ -18,7 +18,9 @@ import {
   DiaperLog,
   SleepLog,
   TummyTimeLog,
+  FirstMilestoneItem,
 } from '../types/database';
+
 
 import { calculateNextDose, calculateWHOWeightPercentile, calculateBabyAge } from '../utils/babyCalculations';
 
@@ -92,7 +94,208 @@ const INITIAL_MOMENTS: Moment[] = [
       { id: 'r2', moment_id: 'p1', user_id: 'u2', emoji: '🥰', comment: 'Orgulho do papai!', user_name: 'Lucas (Pai)', created_at: '2026-10-15T15:30:00Z' },
     ],
   },
+  {
+    id: 'p2',
+    family_id: 'f1',
+    baby_id: 'b1',
+    created_by: 'u2',
+    author_name: 'Lucas (Papai)',
+    author_role_label: 'Pai',
+    media_type: 'photo',
+    media_url: 'https://images.unsplash.com/photo-1544126592-807ade215a0b?auto=format&fit=crop&w=800&q=80',
+    caption: '2 meses do nosso gordinho! Olhar atento pra tudo e já fixando os olhinhos nos nossos rostos. 💙',
+    milestone_type: 'mesversario',
+    milestone_title: '2º Mesversário',
+    month_age: 2,
+    taken_at: '2026-09-15T10:00:00Z',
+    created_at: '2026-09-15T10:30:00Z',
+    reactions_count: 4,
+    reactions: [
+      { id: 'r3', moment_id: 'p2', user_id: 'u1', emoji: '❤️', comment: 'Meu amor todinho!', user_name: 'Marina (Mãe)', created_at: '2026-09-15T11:00:00Z' },
+    ],
+  },
+  {
+    id: 'p3',
+    family_id: 'f1',
+    baby_id: 'b1',
+    created_by: 'u1',
+    author_name: 'Marina (Mamãe)',
+    author_role_label: 'Mãe',
+    media_type: 'photo',
+    media_url: 'https://images.unsplash.com/photo-1510154221590-ff63e90a136f?auto=format&fit=crop&w=800&q=80',
+    caption: '1º Mês de vida do Théo! O mês mais intenso, desafiador e apaixonante das nossas vidas. 👶🍼',
+    milestone_type: 'mesversario',
+    milestone_title: '1º Mesversário',
+    month_age: 1,
+    taken_at: '2026-08-15T16:00:00Z',
+    created_at: '2026-08-15T16:45:00Z',
+    reactions_count: 6,
+    reactions: [
+      { id: 'r4', moment_id: 'p3', user_id: 'u3', emoji: '🥺', comment: 'Passa tão rápido!', user_name: 'Vovó Vera', created_at: '2026-08-15T17:00:00Z' },
+    ],
+  },
+  {
+    id: 'p4',
+    family_id: 'f1',
+    baby_id: 'b1',
+    created_by: 'u1',
+    author_name: 'Marina (Mamãe)',
+    author_role_label: 'Mãe',
+    media_type: 'photo',
+    media_url: 'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?auto=format&fit=crop&w=800&q=80',
+    caption: 'Primeiro banho de banheira com o papai! No início estranhou a aguinha morna, depois relaxou e quase dormiu. 🛁💛',
+    milestone_type: 'first_time',
+    milestone_title: 'Primeiro Banho em Casa',
+    taken_at: '2026-07-18T18:00:00Z',
+    created_at: '2026-07-18T18:30:00Z',
+    reactions_count: 7,
+    reactions: [
+      { id: 'r5', moment_id: 'p4', user_id: 'u2', emoji: '🥰', comment: 'Melhor momento do meu dia!', user_name: 'Lucas (Pai)', created_at: '2026-07-18T19:00:00Z' },
+    ],
+  },
+  {
+    id: 'p5',
+    family_id: 'f1',
+    baby_id: 'b1',
+    created_by: 'u2',
+    author_name: 'Lucas (Papai)',
+    author_role_label: 'Pai',
+    media_type: 'photo',
+    media_url: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80',
+    caption: 'Primeiro sorriso social espontâneo olhando nos olhos da mamãe! Derrreteu a casa inteira! 😍',
+    milestone_type: 'first_time',
+    milestone_title: 'Primeiro Sorriso Social',
+    taken_at: '2026-08-20T11:20:00Z',
+    created_at: '2026-08-20T11:45:00Z',
+    reactions_count: 8,
+    reactions: [
+      { id: 'r6', moment_id: 'p5', user_id: 'u1', emoji: '❤️', comment: 'Chorei de emoção!', user_name: 'Marina (Mãe)', created_at: '2026-08-20T12:00:00Z' },
+    ],
+  },
 ];
+
+const INITIAL_FIRST_MILESTONES: FirstMilestoneItem[] = [
+  {
+    id: 'fm1',
+    baby_id: 'b1',
+    key: 'first_smile',
+    title: 'Primeiro Sorriso Social',
+    category: 'social',
+    expected_age_months: 2,
+    icon: '😊',
+    description: 'Aquele sorriso em resposta à voz ou ao rosto dos pais.',
+    achieved_date: '2026-08-20',
+    photo_url: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80',
+    notes: 'Sorriu olhando fixamente nos olhos da mamãe após a mamada.',
+    logged_by: 'Papai (Lucas)',
+  },
+  {
+    id: 'fm2',
+    baby_id: 'b1',
+    key: 'first_bath',
+    title: 'Primeiro Banho em Casa',
+    category: 'growth',
+    expected_age_months: 1,
+    icon: '🛁',
+    description: 'O primeiro banho no quartinho com aguinha morna e carinho.',
+    achieved_date: '2026-07-18',
+    photo_url: 'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?auto=format&fit=crop&w=800&q=80',
+    notes: 'Papai deu o banho com muito cuidado, Théo relaxou na água.',
+    logged_by: 'Mamãe (Marina)',
+  },
+  {
+    id: 'fm3',
+    baby_id: 'b1',
+    key: 'first_laugh',
+    title: 'Primeira Risadinha Alta',
+    category: 'social',
+    expected_age_months: 3,
+    icon: '😂',
+    description: 'Gargalhadinha gostosa que enche a casa de alegria.',
+    achieved_date: '2026-10-05',
+    photo_url: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=800&q=80',
+    notes: 'Deu risada alta das cócegas na barriguinha que a vovó fez.',
+    logged_by: 'Vovó Vera',
+  },
+  {
+    id: 'fm4',
+    baby_id: 'b1',
+    key: 'rolled_over',
+    title: 'Rolou pela Primeira Vez',
+    category: 'motor',
+    expected_age_months: 4,
+    icon: '🤸',
+    description: 'Virou do abdômen para as costas ou vice-versa no tapetinho.',
+    logged_by: undefined,
+  },
+  {
+    id: 'fm5',
+    baby_id: 'b1',
+    key: 'first_tooth',
+    title: 'Primeiro Dentinho de Leite',
+    category: 'growth',
+    expected_age_months: 6,
+    icon: '🦷',
+    description: 'A pontinha branquinha surgindo na gengiva inferior.',
+    logged_by: undefined,
+  },
+  {
+    id: 'fm6',
+    baby_id: 'b1',
+    key: 'first_solid',
+    title: 'Primeira Papinha / Frutinha',
+    category: 'feeding',
+    expected_age_months: 6,
+    icon: '🥣',
+    description: 'Início da introdução alimentar aos 6 meses!',
+    logged_by: undefined,
+  },
+  {
+    id: 'fm7',
+    baby_id: 'b1',
+    key: 'sat_up',
+    title: 'Sentou sem Apoio',
+    category: 'motor',
+    expected_age_months: 7,
+    icon: '🧸',
+    description: 'Equilíbrio firme sentado no chão explorando brinquedos.',
+    logged_by: undefined,
+  },
+  {
+    id: 'fm8',
+    baby_id: 'b1',
+    key: 'crawled',
+    title: 'Engatinhou pela Casa',
+    category: 'motor',
+    expected_age_months: 8,
+    icon: '🐾',
+    description: 'Autonomia motora para explorar todos os cômodos.',
+    logged_by: undefined,
+  },
+  {
+    id: 'fm9',
+    baby_id: 'b1',
+    key: 'first_steps',
+    title: 'Primeiros Passinhos',
+    category: 'motor',
+    expected_age_months: 12,
+    icon: '🚶',
+    description: 'Os passos mais emocionantes rumo aos braços dos pais.',
+    logged_by: undefined,
+  },
+  {
+    id: 'fm10',
+    baby_id: 'b1',
+    key: 'first_word',
+    title: 'Primeira Palavrinha',
+    category: 'social',
+    expected_age_months: 11,
+    icon: '🗣️',
+    description: 'Mamãe, Papai ou outra palavrinha mágica falada com intenção.',
+    logged_by: undefined,
+  },
+];
+
 
 const INITIAL_GROWTH_LOGS: GrowthLog[] = [
   { id: 'g1', baby_id: 'b1', recorded_date: '2026-07-15', weight_kg: 3.42, height_cm: 49.5, head_circumference_cm: 34.0, percentile_weight: 'p50 (Ideal)', notes: 'Nascimento na Maternidade' },
@@ -393,7 +596,13 @@ interface AppContextType {
   finishActiveSleep: (sleepId: string) => void;
   tummyTimes: TummyTimeLog[];
   addTummyTimeLog: (data: Omit<TummyTimeLog, 'id'>) => void;
+
+  // Módulo Memórias & Álbum Inteligente (De A a Z)
+  addMomentReaction: (momentId: string, reaction: { emoji?: string; comment?: string; user_name: string }) => void;
+  firstMilestones: FirstMilestoneItem[];
+  updateFirstMilestone: (key: string, data: { achieved_date: string; photo_url?: string; notes?: string; logged_by?: string }) => void;
 }
+
 
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -423,6 +632,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [diapers, setDiapers] = useState<DiaperLog[]>(INITIAL_DIAPERS);
   const [sleeps, setSleeps] = useState<SleepLog[]>(INITIAL_SLEEPS);
   const [tummyTimes, setTummyTimes] = useState<TummyTimeLog[]>(INITIAL_TUMMY_TIMES);
+
+  // Memórias & Álbum
+  const [firstMilestones, setFirstMilestones] = useState<FirstMilestoneItem[]>(INITIAL_FIRST_MILESTONES);
+
 
 
   const toggleBabyMode = () => {
@@ -640,6 +853,47 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setTummyTimes((prev) => [newRecord, ...prev]);
   };
 
+  // Memórias & Marcos Handlers
+  const addMomentReaction = (momentId: string, reaction: { emoji?: string; comment?: string; user_name: string }) => {
+    setMoments((prev) =>
+      prev.map((m) => {
+        if (m.id === momentId) {
+          const newReaction = {
+            id: `r_${Date.now()}`,
+            moment_id: momentId,
+            user_id: 'u1',
+            emoji: reaction.emoji,
+            comment: reaction.comment,
+            user_name: reaction.user_name || 'Família',
+            created_at: new Date().toISOString(),
+          };
+          return {
+            ...m,
+            reactions_count: (m.reactions_count || 0) + (reaction.emoji ? 1 : 0),
+            reactions: [...(m.reactions || []), newReaction],
+          };
+        }
+        return m;
+      })
+    );
+  };
+
+  const updateFirstMilestone = (key: string, data: { achieved_date: string; photo_url?: string; notes?: string; logged_by?: string }) => {
+    setFirstMilestones((prev) =>
+      prev.map((item) =>
+        item.key === key
+          ? {
+              ...item,
+              achieved_date: data.achieved_date,
+              photo_url: data.photo_url || item.photo_url,
+              notes: data.notes !== undefined ? data.notes : item.notes,
+              logged_by: data.logged_by || 'Mamãe',
+            }
+          : item
+      )
+    );
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -682,12 +936,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         finishActiveSleep,
         tummyTimes,
         addTummyTimeLog,
+        firstMilestones,
+        updateFirstMilestone,
+        addMomentReaction,
       }}
     >
       {children}
     </AppContext.Provider>
   );
 };
+
 
 
 export const useApp = () => {

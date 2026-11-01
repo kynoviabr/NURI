@@ -303,3 +303,23 @@ export interface TummyTimeLog {
   notes?: string;
   logged_by: string;
 }
+
+// ==============================================================================
+// 7. MÓDULO DE MEMÓRIAS & ÁLBUM INTELIGENTE (DE A A Z)
+// ==============================================================================
+
+export interface FirstMilestoneItem {
+  id: string;
+  baby_id: string;
+  key: string;
+  title: string;
+  category: 'social' | 'motor' | 'feeding' | 'growth' | 'celebration';
+  expected_age_months: number;
+  icon: string;
+  description: string;
+  achieved_date?: string;
+  photo_url?: string;
+  notes?: string;
+  logged_by?: string;
+}
+

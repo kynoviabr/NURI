@@ -69,7 +69,14 @@ export default function RootLayout() {
             name="modals/add-sleep"
             options={{ presentation: 'modal', headerShown: true, title: 'Registrar Sono & Soneca', headerTintColor: Colors.textPrimary, headerStyle: { backgroundColor: '#FFFFFF' } }}
           />
+
+          {/* MODAIS DE MEMÓRIAS & MARCOS */}
+          <Stack.Screen
+            name="modals/record-milestone"
+            options={{ presentation: 'modal', headerShown: true, title: 'Registrar Primeira Vez', headerTintColor: Colors.textPrimary, headerStyle: { backgroundColor: '#FFFFFF' } }}
+          />
         </Stack>
+
       </AppProvider>
     </SafeAreaProvider>
   );

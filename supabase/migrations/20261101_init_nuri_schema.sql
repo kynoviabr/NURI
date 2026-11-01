@@ -480,3 +480,39 @@ FOR ALL USING (
     )
 );
 
+-- ==============================================================================
+-- MÓDULO DE MEMÓRIAS & ÁLBUM INTELIGENTE (DE A A Z)
+-- ==============================================================================
+
+-- 22. LIVRO DE PRIMEIRAS VEZES E MARCOS
+CREATE TABLE IF NOT EXISTS public.first_milestones (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    baby_id UUID NOT NULL REFERENCES public.babies(id) ON DELETE CASCADE,
+    key TEXT NOT NULL,
+    title TEXT NOT NULL,
+    category TEXT NOT NULL DEFAULT 'motor',
+    expected_age_months INT NOT NULL DEFAULT 6,
+    icon TEXT NOT NULL DEFAULT '✨',
+    description TEXT,
+    achieved_date DATE,
+    photo_url TEXT,
+    notes TEXT,
+    logged_by TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    CONSTRAINT uq_baby_milestone_key UNIQUE (baby_id, key)
+);
+
+CREATE INDEX IF NOT EXISTS idx_milestones_baby ON public.first_milestones(baby_id);
+
+ALTER TABLE public.first_milestones ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Family members access first_milestones" ON public.first_milestones
+FOR ALL USING (
+    baby_id IN (
+        SELECT b.id FROM public.babies b
+        JOIN public.family_members fm ON fm.family_id = b.family_id
+        WHERE fm.user_id = auth.uid()
+    )
+);
+
+
