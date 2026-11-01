@@ -271,3 +271,100 @@ FOR ALL USING (
         WHERE fm.user_id = auth.uid()
     )
 );
+
+-- ==============================================================================
+-- EXTENSÃO DO MÓDULO DE GESTAÇÃO (DE A A Z)
+-- ==============================================================================
+
+-- 13. ULTRASSONS E ECOGRAFIAS FETAIS
+CREATE TABLE IF NOT EXISTS public.ultrasound_records (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    baby_id UUID NOT NULL REFERENCES public.babies(id) ON DELETE CASCADE,
+    gestational_week INT NOT NULL,
+    exam_date DATE NOT NULL,
+    exam_name TEXT NOT NULL,
+    doctor_or_clinic TEXT,
+    photo_url TEXT NOT NULL,
+    heart_rate_bpm INT,
+    doctor_report TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 14. DIÁRIO DA BARRIGA (EVOLUÇÃO SEMANAL)
+CREATE TABLE IF NOT EXISTS public.belly_photos (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    baby_id UUID NOT NULL REFERENCES public.babies(id) ON DELETE CASCADE,
+    week INT NOT NULL,
+    photo_url TEXT NOT NULL,
+    caption TEXT,
+    taken_at DATE DEFAULT CURRENT_DATE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 15. SAÚDE MATERNA E SINTOMAS PRÉ-NATAL
+CREATE TABLE IF NOT EXISTS public.maternal_health_logs (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    baby_id UUID NOT NULL REFERENCES public.babies(id) ON DELETE CASCADE,
+    recorded_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    weight_kg NUMERIC(5,2),
+    blood_pressure TEXT,
+    fasting_blood_glucose INT,
+    symptoms TEXT[] DEFAULT ARRAY[]::TEXT[],
+    notes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 16. ITENS DA MALA DA MATERNIDADE
+CREATE TABLE IF NOT EXISTS public.maternity_bag_items (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    baby_id UUID NOT NULL REFERENCES public.babies(id) ON DELETE CASCADE,
+    category TEXT NOT NULL CHECK (category IN ('baby', 'mom', 'partner', 'docs')),
+    name TEXT NOT NULL,
+    quantity TEXT,
+    is_packed BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 17. CONTADOR DE CONTRAÇÕES DO TRABALHO DE PARTO
+CREATE TABLE IF NOT EXISTS public.contraction_records (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    baby_id UUID NOT NULL REFERENCES public.babies(id) ON DELETE CASCADE,
+    start_time TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    duration_seconds INT NOT NULL,
+    interval_seconds INT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- RLS GESTAÇÃO
+ALTER TABLE public.ultrasound_records ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.belly_photos ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.maternal_health_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.maternity_bag_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.contraction_records ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Family members access ultrasound_records" ON public.ultrasound_records
+FOR ALL USING (
+    baby_id IN (
+        SELECT b.id FROM public.babies b
+        JOIN public.family_members fm ON fm.family_id = b.family_id
+        WHERE fm.user_id = auth.uid()
+    )
+);
+
+CREATE POLICY "Family members access belly_photos" ON public.belly_photos
+FOR ALL USING (
+    baby_id IN (
+        SELECT b.id FROM public.babies b
+        JOIN public.family_members fm ON fm.family_id = b.family_id
+        WHERE fm.user_id = auth.uid()
+    )
+);
+
+CREATE POLICY "Family members access maternal_health_logs" ON public.maternal_health_logs
+FOR ALL USING (
+    baby_id IN (
+        SELECT b.id FROM public.babies b
+        JOIN public.family_members fm ON fm.family_id = b.family_id
+        WHERE fm.user_id = auth.uid()
+    )
+);

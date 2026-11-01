@@ -179,3 +179,55 @@ export interface EmergencyShare {
   is_active: boolean;
   expires_at?: string;
 }
+
+// ==============================================================================
+// 5. MÓDULO DE GESTAÇÃO COMPLETO (DE A A Z)
+// ==============================================================================
+
+export interface UltrasoundRecord {
+  id: string;
+  baby_id: string;
+  gestational_week: number;
+  exam_date: string;
+  exam_name: string; // Ex: "1º Ultrassom Transvaginal", "Morfológico 1º Trimestre", "Ecografia 3D"
+  doctor_or_clinic?: string;
+  photo_url: string;
+  heart_rate_bpm?: number; // Ex: 154 bpm
+  gestational_age_estimated?: string;
+  doctor_report?: string;
+}
+
+export interface BellyPhoto {
+  id: string;
+  baby_id: string;
+  week: number;
+  photo_url: string;
+  taken_at: string;
+  caption?: string;
+}
+
+export interface MaternalHealthLog {
+  id: string;
+  baby_id: string;
+  recorded_date: string;
+  weight_kg?: number;
+  blood_pressure?: string; // Ex: "110/70"
+  fasting_blood_glucose?: number; // mg/dL
+  symptoms: string[]; // Ex: ["Enjoo matinal", "Azia", "Inchaço nos pés"]
+  notes?: string;
+}
+
+export interface MaternityBagItem {
+  id: string;
+  category: 'baby' | 'mom' | 'partner' | 'docs';
+  name: string;
+  quantity?: string;
+  is_packed: boolean;
+}
+
+export interface ContractionRecord {
+  id: string;
+  start_time: string;
+  duration_seconds: number;
+  interval_seconds?: number;
+}

@@ -9,6 +9,11 @@ import {
   GrowthLog,
   MedicationLog,
   MedicalAppointment,
+  UltrasoundRecord,
+  BellyPhoto,
+  MaternalHealthLog,
+  MaternityBagItem,
+  ContractionRecord,
 } from '../types/database';
 import { calculateNextDose, calculateWHOWeightPercentile, calculateBabyAge } from '../utils/babyCalculations';
 
@@ -82,22 +87,6 @@ const INITIAL_MOMENTS: Moment[] = [
       { id: 'r2', moment_id: 'p1', user_id: 'u2', emoji: '🥰', comment: 'Orgulho do papai!', user_name: 'Lucas (Pai)', created_at: '2026-10-15T15:30:00Z' },
     ],
   },
-  {
-    id: 'p2',
-    family_id: 'f1',
-    baby_id: 'b1',
-    created_by: 'u1',
-    author_name: 'Marina (Mamãe)',
-    author_role_label: 'Mãe',
-    media_type: 'photo',
-    media_url: 'https://images.unsplash.com/photo-1510154221590-ff63e90a136f?auto=format&fit=crop&w=800&q=80',
-    caption: 'Primeira vez no banho de balde (ofurô). Ficou relaxado que quase dormiu na água morna! 🛁😴',
-    milestone_type: 'first_time',
-    milestone_title: 'Primeiro Ofurô',
-    taken_at: '2026-09-02T19:00:00Z',
-    created_at: '2026-09-02T19:15:00Z',
-    reactions_count: 3,
-  },
 ];
 
 const INITIAL_GROWTH_LOGS: GrowthLog[] = [
@@ -114,11 +103,11 @@ const INITIAL_MEDICATIONS: MedicationLog[] = [
     medicine_name: 'Paracetamol Bebê',
     dosage: '12 gotas (oral)',
     temperature_celsius: 38.2,
-    administered_at: new Date(Date.now() - 3 * 3600 * 1000).toISOString(), // há 3h
-    next_dose_at: new Date(Date.now() + 3 * 3600 * 1000).toISOString(), // daqui a 3h
+    administered_at: new Date(Date.now() - 3 * 3600 * 1000).toISOString(),
+    next_dose_at: new Date(Date.now() + 3 * 3600 * 1000).toISOString(),
     interval_hours: 6,
     administered_by: 'Marina (Mamãe)',
-    reason: 'Reação febril após vacina de 2 meses',
+    reason: 'Reação febril pós vacina de 2 meses',
     notes: 'Temperatura cedeu para 37.1 após 45 minutos.',
   },
 ];
@@ -139,103 +128,80 @@ const INITIAL_APPOINTMENTS: MedicalAppointment[] = [
 ];
 
 const INITIAL_VACCINES: VaccineRecord[] = [
+  { id: 'vr1', baby_id: 'b1', vaccine_id: 'v1', status: 'applied', applied_date: '2026-07-16', clinic_or_post: 'Maternidade Santa Joana', batch_number: 'BCG-8921A', vaccine: { id: 'v1', name: 'BCG', dose_label: 'Dose Única', target_disease: 'Formas graves de tuberculose', recommended_age_months: 0, is_mandatory_sus: true } },
+  { id: 'vr2', baby_id: 'b1', vaccine_id: 'v2', status: 'applied', applied_date: '2026-07-16', clinic_or_post: 'Maternidade Santa Joana', batch_number: 'HEP-4410', vaccine: { id: 'v2', name: 'Hepatite B', dose_label: 'Dose ao nascer', target_disease: 'Hepatite B', recommended_age_months: 0, is_mandatory_sus: true } },
+  { id: 'vr3', baby_id: 'b1', vaccine_id: 'v3', status: 'applied', applied_date: '2026-09-15', clinic_or_post: 'Posto de Saúde Vila Mariana', batch_number: 'PENTA-1092', vaccine: { id: 'v3', name: 'Pentavalente (1ª Dose)', dose_label: '1ª Dose', target_disease: 'Difteria, Tétano, Coqueluche, Hib, Hepatite B', recommended_age_months: 2, is_mandatory_sus: true } },
+  { id: 'vr4', baby_id: 'b1', vaccine_id: 'v4', status: 'pending', scheduled_date: '2026-11-15', vaccine: { id: 'v4', name: 'Pentavalente (2ª Dose)', dose_label: '2ª Dose', target_disease: 'Difteria, Tétano, Coqueluche, Hib, Hepatite B', recommended_age_months: 4, is_mandatory_sus: true } },
+  { id: 'vr5', baby_id: 'b1', vaccine_id: 'v5', status: 'pending', scheduled_date: '2026-11-15', vaccine: { id: 'v5', name: 'VIP Poliomielite (2ª Dose)', dose_label: '2ª Dose', target_disease: 'Paralisia Infantil', recommended_age_months: 4, is_mandatory_sus: true } },
+  { id: 'vr6', baby_id: 'b1', vaccine_id: 'v6', status: 'pending', scheduled_date: '2026-11-15', vaccine: { id: 'v6', name: 'Meningocócica B (Clínica Privada)', dose_label: '1ª Dose', target_disease: 'Meningite Meningocócica do tipo B', recommended_age_months: 4, is_mandatory_sus: false, is_private_clinic: true } },
+];
+
+// Dados Iniciais da Gestação
+const INITIAL_ULTRASOUNDS: UltrasoundRecord[] = [
   {
-    id: 'vr1',
-    baby_id: 'b1',
-    vaccine_id: 'v1',
-    status: 'applied',
-    applied_date: '2026-07-16',
-    clinic_or_post: 'Maternidade Santa Joana',
-    batch_number: 'BCG-8921A',
-    vaccine: {
-      id: 'v1',
-      name: 'BCG',
-      dose_label: 'Dose Única',
-      target_disease: 'Formas graves de tuberculose',
-      recommended_age_months: 0,
-      is_mandatory_sus: true,
-    },
+    id: 'u1',
+    baby_id: 'b2',
+    gestational_week: 8,
+    exam_date: '2026-06-10',
+    exam_name: '1º Ultrassom Transvaginal',
+    doctor_or_clinic: 'Laboratório Fleury',
+    photo_url: 'https://images.unsplash.com/photo-1516585427167-9f4af9627e6c?auto=format&fit=crop&w=800&q=80',
+    heart_rate_bpm: 162,
+    doctor_report: 'Embrião único com batimentos cardíacos presentes e rítmicos. Saco gestacional regular.',
   },
   {
-    id: 'vr2',
-    baby_id: 'b1',
-    vaccine_id: 'v2',
-    status: 'applied',
-    applied_date: '2026-07-16',
-    clinic_or_post: 'Maternidade Santa Joana',
-    batch_number: 'HEP-4410',
-    vaccine: {
-      id: 'v2',
-      name: 'Hepatite B',
-      dose_label: 'Dose ao nascer',
-      target_disease: 'Hepatite B',
-      recommended_age_months: 0,
-      is_mandatory_sus: true,
-    },
+    id: 'u2',
+    baby_id: 'b2',
+    gestational_week: 12,
+    exam_date: '2026-07-08',
+    exam_name: 'Morfológico de 1º Trimestre (TN)',
+    doctor_or_clinic: 'Dra. Renata - Medicina Fetal',
+    photo_url: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=800&q=80',
+    heart_rate_bpm: 154,
+    doctor_report: 'Translucência nucal normal (1.4 mm). Osso nasal presente. Risco muito baixo para cromossomopatias.',
   },
   {
-    id: 'vr3',
-    baby_id: 'b1',
-    vaccine_id: 'v3',
-    status: 'applied',
-    applied_date: '2026-09-15',
-    clinic_or_post: 'Posto de Saúde Vila Mariana',
-    batch_number: 'PENTA-1092',
-    vaccine: {
-      id: 'v3',
-      name: 'Pentavalente (1ª Dose)',
-      dose_label: '1ª Dose',
-      target_disease: 'Difteria, Tétano, Coqueluche, Hib, Hepatite B',
-      recommended_age_months: 2,
-      is_mandatory_sus: true,
-    },
+    id: 'u3',
+    baby_id: 'b2',
+    gestational_week: 22,
+    exam_date: '2026-09-15',
+    exam_name: 'Morfológico de 2º Trimestre (3D/4D)',
+    doctor_or_clinic: 'Clínica Alta Diagnósticos',
+    photo_url: 'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?auto=format&fit=crop&w=800&q=80',
+    heart_rate_bpm: 148,
+    doctor_report: 'Anatomia fetal completa sem alterações. Sexo confirmado: Menina (Maya). Peso estimado: 490g.',
   },
-  {
-    id: 'vr4',
-    baby_id: 'b1',
-    vaccine_id: 'v4',
-    status: 'pending',
-    scheduled_date: '2026-11-15',
-    vaccine: {
-      id: 'v4',
-      name: 'Pentavalente (2ª Dose)',
-      dose_label: '2ª Dose',
-      target_disease: 'Difteria, Tétano, Coqueluche, Hib, Hepatite B',
-      recommended_age_months: 4,
-      is_mandatory_sus: true,
-    },
-  },
-  {
-    id: 'vr5',
-    baby_id: 'b1',
-    vaccine_id: 'v5',
-    status: 'pending',
-    scheduled_date: '2026-11-15',
-    vaccine: {
-      id: 'v5',
-      name: 'VIP Poliomielite (2ª Dose)',
-      dose_label: '2ª Dose',
-      target_disease: 'Paralisia Infantil',
-      recommended_age_months: 4,
-      is_mandatory_sus: true,
-    },
-  },
-  {
-    id: 'vr6',
-    baby_id: 'b1',
-    vaccine_id: 'v6',
-    status: 'pending',
-    scheduled_date: '2026-11-15',
-    vaccine: {
-      id: 'v6',
-      name: 'Meningocócica B (Clínica Privada)',
-      dose_label: '1ª Dose',
-      target_disease: 'Meningite Meningocócica do tipo B',
-      recommended_age_months: 4,
-      is_mandatory_sus: false,
-      is_private_clinic: true,
-    },
-  },
+];
+
+const INITIAL_BELLY_PHOTOS: BellyPhoto[] = [
+  { id: 'bp1', baby_id: 'b2', week: 12, photo_url: 'https://images.unsplash.com/photo-1516585427167-9f4af9627e6c?auto=format&fit=crop&w=600&q=80', taken_at: '2026-07-08', caption: 'Primeira curvinha da barriga aparecendo!' },
+  { id: 'bp2', baby_id: 'b2', week: 16, photo_url: 'https://images.unsplash.com/photo-1537655780520-1e392ead81f2?auto=format&fit=crop&w=600&q=80', taken_at: '2026-08-05', caption: 'Sentindo as primeiras borboletinhas na barriga.' },
+  { id: 'bp3', baby_id: 'b2', week: 20, photo_url: 'https://images.unsplash.com/photo-1584447128309-b66b7a4d1b63?auto=format&fit=crop&w=600&q=80', taken_at: '2026-09-02', caption: 'Metade do caminho! Barriguinha já não esconde mais.' },
+];
+
+const INITIAL_MATERNAL_LOGS: MaternalHealthLog[] = [
+  { id: 'ml1', baby_id: 'b2', recorded_date: '2026-09-02', weight_kg: 62.4, blood_pressure: '110/70', fasting_blood_glucose: 84, symptoms: ['Azia leve', 'Dor na lombar'], notes: 'Consulta pré-natal tranquila.' },
+  { id: 'ml2', baby_id: 'b2', recorded_date: '2026-10-01', weight_kg: 64.1, blood_pressure: '115/75', fasting_blood_glucose: 86, symptoms: ['Inchaço nos tornozelos', 'Cansaço'], notes: 'Médico orientou elevar as pernas.' },
+];
+
+const INITIAL_MATERNITY_BAG: MaternityBagItem[] = [
+  // Bebê
+  { id: 'bag1', category: 'baby', name: 'Saída de Maternidade completa', quantity: '1 conjunto', is_packed: true },
+  { id: 'bag2', category: 'baby', name: 'Bodies manga longa', quantity: '6 unidades', is_packed: true },
+  { id: 'bag3', category: 'baby', name: 'Culotes / Mijões', quantity: '6 unidades', is_packed: true },
+  { id: 'bag4', category: 'baby', name: 'Macacões quentinhos', quantity: '4 unidades', is_packed: false },
+  { id: 'bag5', category: 'baby', name: 'Paninhos de boca / Fraldinhas', quantity: '8 unidades', is_packed: true },
+  { id: 'bag6', category: 'baby', name: 'Fraldas descartáveis RN e P', quantity: '1 pacote de cada', is_packed: false },
+  { id: 'bag7', category: 'baby', name: 'Manta suave', quantity: '2 unidades', is_packed: true },
+  // Mãe
+  { id: 'bag8', category: 'mom', name: 'Camisolas com abertura para amamentar', quantity: '3 unidades', is_packed: true },
+  { id: 'bag9', category: 'mom', name: 'Sutiãs de amamentação', quantity: '3 unidades', is_packed: true },
+  { id: 'bag10', category: 'mom', name: 'Calcinhas pós-parto confortáveis', quantity: '6 unidades', is_packed: false },
+  { id: 'bag11', category: 'mom', name: 'Absorventes pós-parto / Noturnos', quantity: '2 pacotes', is_packed: false },
+  { id: 'bag12', category: 'mom', name: 'Pomada de Lanolina para bicos', quantity: '1 bisnaga', is_packed: true },
+  // Documentos
+  { id: 'bag13', category: 'docs', name: 'Carteirinha do Convênio e RG dos Pais', quantity: 'Originais', is_packed: true },
+  { id: 'bag14', category: 'docs', name: 'Cartão de Pré-Natal e Últimos Ultrassons', quantity: 'Pasta de exames', is_packed: true },
 ];
 
 const INITIAL_EMERGENCY_SHARE: EmergencyShare = {
@@ -262,24 +228,32 @@ interface AppContextType {
   moments: Moment[];
   addMoment: (moment: Omit<Moment, 'id' | 'created_at' | 'family_id' | 'baby_id'>) => void;
   
-  // Módulo de Saúde Completo (A a Z)
+  // Saúde Pediátrica
   vaccines: VaccineRecord[];
   markVaccineAsApplied: (recordId: string, clinic: string, batchNumber?: string) => void;
   addCustomVaccine: (vaccineName: string, targetDisease: string, recommendedMonths: number, isPrivate: boolean) => void;
-  
   growthLogs: GrowthLog[];
   addGrowthLog: (data: { recorded_date: string; weight_kg: number; height_cm: number; head_circumference_cm?: number; notes?: string }) => void;
-  
   medicationLogs: MedicationLog[];
   addMedicationLog: (data: { medicine_name: string; dosage: string; temperature_celsius?: number; interval_hours?: number; administered_by: string; reason?: string; notes?: string }) => void;
-  
   appointments: MedicalAppointment[];
   addAppointment: (data: Omit<MedicalAppointment, 'id' | 'baby_id'>) => void;
-
   addAllergy: (allergy: string) => void;
   removeAllergy: (allergy: string) => void;
-  
   emergencyShare: EmergencyShare;
+
+  // Módulo Gestação (De A a Z)
+  ultrasounds: UltrasoundRecord[];
+  addUltrasound: (data: Omit<UltrasoundRecord, 'id' | 'baby_id'>) => void;
+  bellyPhotos: BellyPhoto[];
+  addBellyPhoto: (data: Omit<BellyPhoto, 'id' | 'baby_id'>) => void;
+  maternalLogs: MaternalHealthLog[];
+  addMaternalLog: (data: Omit<MaternalHealthLog, 'id' | 'baby_id'>) => void;
+  maternityBag: MaternityBagItem[];
+  toggleBagItem: (id: string) => void;
+  addBagItem: (category: MaternityBagItem['category'], name: string, quantity?: string) => void;
+  contractions: ContractionRecord[];
+  addContraction: (durationSeconds: number, intervalSeconds?: number) => void;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -289,11 +263,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [family] = useState<Family>(INITIAL_FAMILY);
   const [members] = useState<FamilyMember[]>(INITIAL_MEMBERS);
   const [moments, setMoments] = useState<Moment[]>(INITIAL_MOMENTS);
+  
+  // Saúde
   const [vaccines, setVaccines] = useState<VaccineRecord[]>(INITIAL_VACCINES);
   const [growthLogs, setGrowthLogs] = useState<GrowthLog[]>(INITIAL_GROWTH_LOGS);
   const [medicationLogs, setMedicationLogs] = useState<MedicationLog[]>(INITIAL_MEDICATIONS);
   const [appointments, setAppointments] = useState<MedicalAppointment[]>(INITIAL_APPOINTMENTS);
   const [emergencyShare] = useState<EmergencyShare>(INITIAL_EMERGENCY_SHARE);
+
+  // Gestação
+  const [ultrasounds, setUltrasounds] = useState<UltrasoundRecord[]>(INITIAL_ULTRASOUNDS);
+  const [bellyPhotos, setBellyPhotos] = useState<BellyPhoto[]>(INITIAL_BELLY_PHOTOS);
+  const [maternalLogs, setMaternalLogs] = useState<MaternalHealthLog[]>(INITIAL_MATERNAL_LOGS);
+  const [maternityBag, setMaternityBag] = useState<MaternityBagItem[]>(INITIAL_MATERNITY_BAG);
+  const [contractions, setContractions] = useState<ContractionRecord[]>([]);
 
   const toggleBabyMode = () => {
     setBaby((prev) => (prev.status === 'born' ? INITIAL_GESTATION_BABY : INITIAL_BABY));
@@ -404,6 +387,61 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setBaby((prev) => ({ ...prev, allergies: prev.allergies.filter((a) => a !== allergy) }));
   };
 
+  // Gestação Métodos
+  const addUltrasound = (data: Omit<UltrasoundRecord, 'id' | 'baby_id'>) => {
+    const newRecord: UltrasoundRecord = {
+      ...data,
+      id: `us_${Date.now()}`,
+      baby_id: baby.id,
+    };
+    setUltrasounds((prev) => [newRecord, ...prev]);
+  };
+
+  const addBellyPhoto = (data: Omit<BellyPhoto, 'id' | 'baby_id'>) => {
+    const newRecord: BellyPhoto = {
+      ...data,
+      id: `bp_${Date.now()}`,
+      baby_id: baby.id,
+    };
+    setBellyPhotos((prev) => [newRecord, ...prev]);
+  };
+
+  const addMaternalLog = (data: Omit<MaternalHealthLog, 'id' | 'baby_id'>) => {
+    const newRecord: MaternalHealthLog = {
+      ...data,
+      id: `ml_${Date.now()}`,
+      baby_id: baby.id,
+    };
+    setMaternalLogs((prev) => [newRecord, ...prev]);
+  };
+
+  const toggleBagItem = (id: string) => {
+    setMaternityBag((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, is_packed: !item.is_packed } : item))
+    );
+  };
+
+  const addBagItem = (category: MaternityBagItem['category'], name: string, quantity?: string) => {
+    const newItem: MaternityBagItem = {
+      id: `bag_${Date.now()}`,
+      category,
+      name,
+      quantity,
+      is_packed: false,
+    };
+    setMaternityBag((prev) => [...prev, newItem]);
+  };
+
+  const addContraction = (durationSeconds: number, intervalSeconds?: number) => {
+    const newRecord: ContractionRecord = {
+      id: `c_${Date.now()}`,
+      start_time: new Date().toISOString(),
+      duration_seconds: durationSeconds,
+      interval_seconds: intervalSeconds,
+    };
+    setContractions((prev) => [newRecord, ...prev]);
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -426,6 +464,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         addAllergy,
         removeAllergy,
         emergencyShare,
+        ultrasounds,
+        addUltrasound,
+        bellyPhotos,
+        addBellyPhoto,
+        maternalLogs,
+        addMaternalLog,
+        maternityBag,
+        toggleBagItem,
+        addBagItem,
+        contractions,
+        addContraction,
       }}
     >
       {children}
