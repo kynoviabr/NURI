@@ -1,0 +1,52 @@
+{
+  "expo": {
+    "name": "Nuri - Bebê & Família",
+    "slug": "nuri-baby-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "nuri",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FDFBF7"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.nuri.babyapp",
+      "infoPlist": {
+        "NSCameraUsageDescription": "O Nuri precisa de acesso à câmera para registrar fotos e vídeos dos momentos marcantes do bebê.",
+        "NSPhotoLibraryUsageDescription": "O Nuri precisa de acesso à sua biblioteca de fotos para você salvar e compartilhar fotos na linha do tempo familiar.",
+        "NSMicrophoneUsageDescription": "Necessário para registrar vídeos com áudio das primeiras palavras e momentos do bebê."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FDFBF7"
+      },
+      "package": "com.nuri.babyapp",
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "RECORD_AUDIO"
+      ]
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O Nuri precisa acessar suas fotos para criar a linha do tempo do bebê."
+        }
+      ]
+    ]
+  }
+}
