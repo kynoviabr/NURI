@@ -47,6 +47,11 @@
           "photosPermission": "O Nuri precisa acessar suas fotos para criar a linha do tempo do bebê."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "4d4c98c6-8b3b-4a56-b6b0-1cf0b24"
+      }
+    }
   }
 }
