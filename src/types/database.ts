@@ -1,5 +1,6 @@
 /**
  * NURI TYPE DEFINITIONS - ENTIDADES E MODELOS DE DADOS
+ * Módulo de Saúde Infantil Completo de A a Z
  */
 
 export type UserRole = 'admin' | 'family' | 'caregiver' | 'doctor';
@@ -30,10 +31,18 @@ export interface FamilyMember {
   family_id: string;
   user_id: string;
   role: UserRole;
-  relationship_label: string; // Ex: "Mãe", "Vovó", "Dindo"
+  relationship_label: string;
   can_post: boolean;
   can_edit_health: boolean;
   profile?: Profile;
+}
+
+export interface HealthInsurance {
+  plan_name: string;
+  card_number: string;
+  holder_name: string;
+  emergency_phone: string;
+  accommodation_type?: string; // Apartamento / Enfermaria
 }
 
 export interface Baby {
@@ -45,7 +54,11 @@ export interface Baby {
   birth_date?: string; // YYYY-MM-DD
   gender: BabyGender;
   blood_type?: string;
+  birth_weight_kg?: number;
+  birth_height_cm?: number;
   allergies: string[];
+  conditions?: string[]; // Ex: Refluxo, APLV, Asma
+  health_insurance?: HealthInsurance;
   avatar_url?: string;
 }
 
@@ -74,11 +87,10 @@ export interface Moment {
   caption?: string;
   milestone_type: MilestoneType;
   milestone_title?: string;
-  month_age?: number; // Para badge de mesversário
+  month_age?: number;
   taken_at: string;
   created_at: string;
   reactions_count?: number;
-  comments_count?: number;
   reactions?: MomentReaction[];
 }
 
@@ -89,6 +101,7 @@ export interface VaccineCatalogItem {
   target_disease: string;
   recommended_age_months: number;
   is_mandatory_sus: boolean;
+  is_private_clinic?: boolean;
   description?: string;
 }
 
@@ -103,16 +116,49 @@ export interface VaccineRecord {
   batch_number?: string;
   clinic_or_post?: string;
   proof_photo_url?: string;
+  notes?: string;
 }
 
+// 2. Crescimento e Curvas OMS
 export interface GrowthLog {
   id: string;
   baby_id: string;
   recorded_date: string;
-  weight_kg?: number;
-  height_cm?: number;
+  weight_kg: number;
+  height_cm: number;
   head_circumference_cm?: number;
+  percentile_weight?: string; // Ex: "p50", "p75"
+  percentile_height?: string;
   notes?: string;
+}
+
+// 3. Medicamentos, Febres e Sintomas
+export interface MedicationLog {
+  id: string;
+  baby_id: string;
+  medicine_name: string; // Ex: "Paracetamol", "Dipirona", "Amoxicilina"
+  dosage: string; // Ex: "12 gotas", "2.5 ml", "1 comprimido"
+  temperature_celsius?: number; // Ex: 38.4 (se associado a febre)
+  administered_at: string; // ISO string
+  next_dose_at?: string; // Calculado automaticamente pelo intervalo
+  interval_hours?: number; // Ex: 6 (a cada 6 horas)
+  administered_by: string; // Ex: "Mamãe", "Papai"
+  reason?: string; // Ex: "Pico de febre após vacina", "Dor de dente"
+  notes?: string;
+}
+
+// 4. Consultas Pediátricas
+export interface MedicalAppointment {
+  id: string;
+  baby_id: string;
+  doctor_name: string;
+  specialty: string; // "Pediatra", "Odontopediatra", "Otorrino"
+  clinic_name?: string;
+  appointment_date: string;
+  questions_to_ask?: string[]; // Dúvidas anotadas pelos pais antes da consulta
+  doctor_diagnosis_notes?: string;
+  prescription_notes?: string;
+  phone?: string;
 }
 
 export interface EmergencyPickup {

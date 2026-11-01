@@ -1,7 +1,17 @@
 import React, { createContext, useContext, useState } from 'react';
-import { Baby, Family, FamilyMember, Moment, VaccineRecord, EmergencyShare } from '../types/database';
+import {
+  Baby,
+  Family,
+  FamilyMember,
+  Moment,
+  VaccineRecord,
+  EmergencyShare,
+  GrowthLog,
+  MedicationLog,
+  MedicalAppointment,
+} from '../types/database';
+import { calculateNextDose, calculateWHOWeightPercentile, calculateBabyAge } from '../utils/babyCalculations';
 
-// Dados de Exemplo Realistas para demonstração e desenvolvimento
 const INITIAL_BABY: Baby = {
   id: 'b1',
   family_id: 'f1',
@@ -10,7 +20,17 @@ const INITIAL_BABY: Baby = {
   birth_date: '2026-07-15',
   gender: 'boy',
   blood_type: 'O+',
+  birth_weight_kg: 3.42,
+  birth_height_cm: 49.5,
   allergies: ['Amendoim (Leve)', 'Picada de Inseto'],
+  conditions: ['Refluxo Fisiológico leve'],
+  health_insurance: {
+    plan_name: 'Bradesco Saúde Top Nacional',
+    card_number: '789.456.123.001',
+    holder_name: 'Lucas Silva',
+    emergency_phone: '0800-701-2700',
+    accommodation_type: 'Apartamento',
+  },
   avatar_url: 'https://images.unsplash.com/photo-1544126592-807ade215a0b?auto=format&fit=crop&w=600&q=80',
 };
 
@@ -34,42 +54,10 @@ const INITIAL_FAMILY: Family = {
 };
 
 const INITIAL_MEMBERS: FamilyMember[] = [
-  {
-    id: 'm1',
-    family_id: 'f1',
-    user_id: 'u1',
-    role: 'admin',
-    relationship_label: 'Mamãe (Marina)',
-    can_post: true,
-    can_edit_health: true,
-  },
-  {
-    id: 'm2',
-    family_id: 'f1',
-    user_id: 'u2',
-    role: 'admin',
-    relationship_label: 'Papai (Lucas)',
-    can_post: true,
-    can_edit_health: true,
-  },
-  {
-    id: 'm3',
-    family_id: 'f1',
-    user_id: 'u3',
-    role: 'family',
-    relationship_label: 'Vovó Vera',
-    can_post: true,
-    can_edit_health: false,
-  },
-  {
-    id: 'm4',
-    family_id: 'f1',
-    user_id: 'u4',
-    role: 'caregiver',
-    relationship_label: 'Tia Sandra (Babá)',
-    can_post: false,
-    can_edit_health: false,
-  },
+  { id: 'm1', family_id: 'f1', user_id: 'u1', role: 'admin', relationship_label: 'Mamãe (Marina)', can_post: true, can_edit_health: true },
+  { id: 'm2', family_id: 'f1', user_id: 'u2', role: 'admin', relationship_label: 'Papai (Lucas)', can_post: true, can_edit_health: true },
+  { id: 'm3', family_id: 'f1', user_id: 'u3', role: 'family', relationship_label: 'Vovó Vera', can_post: true, can_edit_health: false },
+  { id: 'm4', family_id: 'f1', user_id: 'u4', role: 'caregiver', relationship_label: 'Tia Sandra (Babá)', can_post: false, can_edit_health: false },
 ];
 
 const INITIAL_MOMENTS: Moment[] = [
@@ -109,6 +97,44 @@ const INITIAL_MOMENTS: Moment[] = [
     taken_at: '2026-09-02T19:00:00Z',
     created_at: '2026-09-02T19:15:00Z',
     reactions_count: 3,
+  },
+];
+
+const INITIAL_GROWTH_LOGS: GrowthLog[] = [
+  { id: 'g1', baby_id: 'b1', recorded_date: '2026-07-15', weight_kg: 3.42, height_cm: 49.5, head_circumference_cm: 34.0, percentile_weight: 'p50 (Ideal)', notes: 'Nascimento na Maternidade' },
+  { id: 'g2', baby_id: 'b1', recorded_date: '2026-08-16', weight_kg: 4.60, height_cm: 54.0, head_circumference_cm: 36.5, percentile_weight: 'p50 (Ideal)', notes: 'Consulta de 1º mês - Ganho excelente de peso' },
+  { id: 'g3', baby_id: 'b1', recorded_date: '2026-09-17', weight_kg: 5.65, height_cm: 58.2, head_circumference_cm: 38.8, percentile_weight: 'p50 (Ideal)', notes: 'Consulta de 2º mês' },
+  { id: 'g4', baby_id: 'b1', recorded_date: '2026-10-15', weight_kg: 6.25, height_cm: 61.5, head_circumference_cm: 40.2, percentile_weight: 'p50 (Ideal OMS)', notes: 'Consulta de 3º mês - Desenvolvimento motor perfeito' },
+];
+
+const INITIAL_MEDICATIONS: MedicationLog[] = [
+  {
+    id: 'm_1',
+    baby_id: 'b1',
+    medicine_name: 'Paracetamol Bebê',
+    dosage: '12 gotas (oral)',
+    temperature_celsius: 38.2,
+    administered_at: new Date(Date.now() - 3 * 3600 * 1000).toISOString(), // há 3h
+    next_dose_at: new Date(Date.now() + 3 * 3600 * 1000).toISOString(), // daqui a 3h
+    interval_hours: 6,
+    administered_by: 'Marina (Mamãe)',
+    reason: 'Reação febril após vacina de 2 meses',
+    notes: 'Temperatura cedeu para 37.1 após 45 minutos.',
+  },
+];
+
+const INITIAL_APPOINTMENTS: MedicalAppointment[] = [
+  {
+    id: 'a1',
+    baby_id: 'b1',
+    doctor_name: 'Dra. Camila Nogueira',
+    specialty: 'Pediatra Geral',
+    clinic_name: 'Clínica Pediátrica Crescer',
+    appointment_date: '2026-10-15',
+    phone: '(11) 3289-4000',
+    questions_to_ask: ['Introdução de mordedores', 'Tempo de tummy time por dia'],
+    doctor_diagnosis_notes: 'Bebê com tônus muscular excelente. Peso e estatura no percentil 50 da OMS.',
+    prescription_notes: 'Manter Vitamina D (2 gotas diárias). Retorno em 30 dias para rotina de 4 meses.',
   },
 ];
 
@@ -194,6 +220,22 @@ const INITIAL_VACCINES: VaccineRecord[] = [
       is_mandatory_sus: true,
     },
   },
+  {
+    id: 'vr6',
+    baby_id: 'b1',
+    vaccine_id: 'v6',
+    status: 'pending',
+    scheduled_date: '2026-11-15',
+    vaccine: {
+      id: 'v6',
+      name: 'Meningocócica B (Clínica Privada)',
+      dose_label: '1ª Dose',
+      target_disease: 'Meningite Meningocócica do tipo B',
+      recommended_age_months: 4,
+      is_mandatory_sus: false,
+      is_private_clinic: true,
+    },
+  },
 ];
 
 const INITIAL_EMERGENCY_SHARE: EmergencyShare = {
@@ -219,8 +261,24 @@ interface AppContextType {
   members: FamilyMember[];
   moments: Moment[];
   addMoment: (moment: Omit<Moment, 'id' | 'created_at' | 'family_id' | 'baby_id'>) => void;
+  
+  // Módulo de Saúde Completo (A a Z)
   vaccines: VaccineRecord[];
-  markVaccineAsApplied: (recordId: string, clinic: string) => void;
+  markVaccineAsApplied: (recordId: string, clinic: string, batchNumber?: string) => void;
+  addCustomVaccine: (vaccineName: string, targetDisease: string, recommendedMonths: number, isPrivate: boolean) => void;
+  
+  growthLogs: GrowthLog[];
+  addGrowthLog: (data: { recorded_date: string; weight_kg: number; height_cm: number; head_circumference_cm?: number; notes?: string }) => void;
+  
+  medicationLogs: MedicationLog[];
+  addMedicationLog: (data: { medicine_name: string; dosage: string; temperature_celsius?: number; interval_hours?: number; administered_by: string; reason?: string; notes?: string }) => void;
+  
+  appointments: MedicalAppointment[];
+  addAppointment: (data: Omit<MedicalAppointment, 'id' | 'baby_id'>) => void;
+
+  addAllergy: (allergy: string) => void;
+  removeAllergy: (allergy: string) => void;
+  
   emergencyShare: EmergencyShare;
 }
 
@@ -232,6 +290,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [members] = useState<FamilyMember[]>(INITIAL_MEMBERS);
   const [moments, setMoments] = useState<Moment[]>(INITIAL_MOMENTS);
   const [vaccines, setVaccines] = useState<VaccineRecord[]>(INITIAL_VACCINES);
+  const [growthLogs, setGrowthLogs] = useState<GrowthLog[]>(INITIAL_GROWTH_LOGS);
+  const [medicationLogs, setMedicationLogs] = useState<MedicationLog[]>(INITIAL_MEDICATIONS);
+  const [appointments, setAppointments] = useState<MedicalAppointment[]>(INITIAL_APPOINTMENTS);
   const [emergencyShare] = useState<EmergencyShare>(INITIAL_EMERGENCY_SHARE);
 
   const toggleBabyMode = () => {
@@ -251,7 +312,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setMoments((prev) => [newMoment, ...prev]);
   };
 
-  const markVaccineAsApplied = (recordId: string, clinic: string) => {
+  const markVaccineAsApplied = (recordId: string, clinic: string, batchNumber?: string) => {
     setVaccines((prev) =>
       prev.map((v) =>
         v.id === recordId
@@ -259,11 +320,88 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
               ...v,
               status: 'applied',
               applied_date: new Date().toISOString().split('T')[0],
-              clinic_or_post: clinic || 'Posto de Saúde',
+              clinic_or_post: clinic || 'Posto de Saúde Municipal',
+              batch_number: batchNumber || v.batch_number || 'LOTE-2026',
             }
           : v
       )
     );
+  };
+
+  const addCustomVaccine = (vaccineName: string, targetDisease: string, recommendedMonths: number, isPrivate: boolean) => {
+    const newRecord: VaccineRecord = {
+      id: `vr_${Date.now()}`,
+      baby_id: baby.id,
+      vaccine_id: `v_custom_${Date.now()}`,
+      status: 'pending',
+      vaccine: {
+        id: `v_custom_${Date.now()}`,
+        name: vaccineName,
+        dose_label: 'Dose Especial',
+        target_disease: targetDisease,
+        recommended_age_months: recommendedMonths,
+        is_mandatory_sus: !isPrivate,
+        is_private_clinic: isPrivate,
+      },
+    };
+    setVaccines((prev) => [...prev, newRecord]);
+  };
+
+  const addGrowthLog = (data: { recorded_date: string; weight_kg: number; height_cm: number; head_circumference_cm?: number; notes?: string }) => {
+    const ageMonths = baby.birth_date ? calculateBabyAge(baby.birth_date).months : 3;
+    const percentile = calculateWHOWeightPercentile(data.weight_kg, ageMonths);
+    
+    const newLog: GrowthLog = {
+      id: `g_${Date.now()}`,
+      baby_id: baby.id,
+      recorded_date: data.recorded_date,
+      weight_kg: data.weight_kg,
+      height_cm: data.height_cm,
+      head_circumference_cm: data.head_circumference_cm,
+      percentile_weight: percentile,
+      notes: data.notes,
+    };
+    setGrowthLogs((prev) => [newLog, ...prev]);
+  };
+
+  const addMedicationLog = (data: { medicine_name: string; dosage: string; temperature_celsius?: number; interval_hours?: number; administered_by: string; reason?: string; notes?: string }) => {
+    const nowIso = new Date().toISOString();
+    const interval = data.interval_hours || 6;
+    const nextDose = calculateNextDose(nowIso, interval);
+
+    const newLog: MedicationLog = {
+      id: `med_${Date.now()}`,
+      baby_id: baby.id,
+      medicine_name: data.medicine_name,
+      dosage: data.dosage,
+      temperature_celsius: data.temperature_celsius,
+      administered_at: nowIso,
+      next_dose_at: nextDose,
+      interval_hours: interval,
+      administered_by: data.administered_by,
+      reason: data.reason,
+      notes: data.notes,
+    };
+    setMedicationLogs((prev) => [newLog, ...prev]);
+  };
+
+  const addAppointment = (data: Omit<MedicalAppointment, 'id' | 'baby_id'>) => {
+    const newAppt: MedicalAppointment = {
+      ...data,
+      id: `appt_${Date.now()}`,
+      baby_id: baby.id,
+    };
+    setAppointments((prev) => [newAppt, ...prev]);
+  };
+
+  const addAllergy = (allergy: string) => {
+    if (!baby.allergies.includes(allergy)) {
+      setBaby((prev) => ({ ...prev, allergies: [...prev.allergies, allergy] }));
+    }
+  };
+
+  const removeAllergy = (allergy: string) => {
+    setBaby((prev) => ({ ...prev, allergies: prev.allergies.filter((a) => a !== allergy) }));
   };
 
   return (
@@ -278,6 +416,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         addMoment,
         vaccines,
         markVaccineAsApplied,
+        addCustomVaccine,
+        growthLogs,
+        addGrowthLog,
+        medicationLogs,
+        addMedicationLog,
+        appointments,
+        addAppointment,
+        addAllergy,
+        removeAllergy,
         emergencyShare,
       }}
     >

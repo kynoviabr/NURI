@@ -1,5 +1,5 @@
 /**
- * NURI HELPERS - CÁLCULOS DE GESTAÇÃO, IDADE E VACINAS
+ * NURI HELPERS - CÁLCULOS PEDIÁTRICOS, PERCENTIS OMS E GESTAÇÃO
  */
 
 export interface GestationProgress {
@@ -18,6 +18,13 @@ export interface BabyAge {
   years: number;
   formattedText: string;
   nextMilestoneTitle: string;
+}
+
+export interface TemperatureClassification {
+  category: 'normal' | 'febril' | 'febre_moderada' | 'febre_alta';
+  label: string;
+  color: string;
+  advice: string;
 }
 
 const GESTATION_WEEKS_DATA: Record<number, { fruit: string; tip: string }> = {
@@ -48,7 +55,6 @@ export function calculateGestation(dueDateStr: string): GestationProgress {
   const currentDay = daysPassed % 7;
   const percentage = Math.min(100, Math.round((daysPassed / totalGestationDays) * 100));
 
-  // Acha a comparação de fruta mais próxima
   const availableWeeks = Object.keys(GESTATION_WEEKS_DATA).map(Number).sort((a, b) => a - b);
   let bestWeek = availableWeeks[0];
   for (const w of availableWeeks) {
@@ -116,7 +122,66 @@ export function calculateBabyAge(birthDateStr: string): BabyAge {
 }
 
 /**
- * Formata data amigável relativa (ex: "Hoje", "Há 2 horas", "14 de Outubro")
+ * Classificação de Febre Infantil
+ */
+export function classifyTemperature(temp: number): TemperatureClassification {
+  if (temp < 37.3) {
+    return {
+      category: 'normal',
+      label: 'Afebril (Normal)',
+      color: '#2E8555',
+      advice: 'Temperatura normal. Manter observação de rotina.',
+    };
+  }
+  if (temp <= 37.7) {
+    return {
+      category: 'febril',
+      label: 'Estado Febril',
+      color: '#D97706',
+      advice: 'Ofereça líquidos/peito e retire roupas em excesso. Monitore a cada hora.',
+    };
+  }
+  if (temp <= 38.9) {
+    return {
+      category: 'febre_moderada',
+      label: 'Febre Moderada',
+      color: '#DC2626',
+      advice: 'Administrar antitérmico conforme prescrição médica. Oferecer hidratação constante.',
+    };
+  }
+  return {
+    category: 'febre_alta',
+    label: 'Febre Alta (Alerta)',
+    color: '#991B1B',
+    advice: 'Administrar antitérmico. Se não houver queda em 2h ou houver sonolência excessiva, procure pronto-socorro.',
+  };
+}
+
+/**
+ * Calcula o horário da próxima dose baseado no intervalo de horas
+ */
+export function calculateNextDose(administeredAtIso: string, intervalHours: number): string {
+  const date = new Date(administeredAtIso);
+  date.setHours(date.getHours() + intervalHours);
+  return date.toISOString();
+}
+
+/**
+ * Calcula a estimativa de Percentil da OMS para Peso baseado em meses de vida (Meninos / Meninas)
+ */
+export function calculateWHOWeightPercentile(weightKg: number, ageMonths: number): string {
+  // Médias aproximadas p50 para meninos/meninas: 0m: 3.3kg, 1m: 4.5kg, 2m: 5.6kg, 3m: 6.4kg, 4m: 7.0kg, 6m: 7.9kg, 12m: 9.6kg
+  const expectedP50 = 3.3 + (ageMonths * 0.75) - (ageMonths > 6 ? (ageMonths - 6) * 0.25 : 0);
+  const diffPercent = ((weightKg - expectedP50) / expectedP50) * 100;
+
+  if (diffPercent < -15) return 'p15 (Abaixo da média)';
+  if (diffPercent >= -15 && diffPercent <= 15) return 'p50 (Ideal OMS)';
+  if (diffPercent > 15 && diffPercent <= 25) return 'p85 (Acima da média)';
+  return 'p97 (Alto)';
+}
+
+/**
+ * Formata data amigável relativa
  */
 export function formatRelativeDate(dateStr: string): string {
   const date = new Date(dateStr);

@@ -214,3 +214,60 @@ FOR INSERT WITH CHECK (
         WHERE user_id = auth.uid() AND can_post = true
     )
 );
+
+-- ==============================================================================
+-- EXTENSÃO DO MÓDULO DE SAÚDE INFANTIL (A A Z)
+-- ==============================================================================
+
+-- 11. MEDICAMENTOS, FEBRES E SINTOMAS
+CREATE TABLE IF NOT EXISTS public.medication_logs (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    baby_id UUID NOT NULL REFERENCES public.babies(id) ON DELETE CASCADE,
+    medicine_name TEXT NOT NULL,
+    dosage TEXT NOT NULL,
+    temperature_celsius NUMERIC(4,2),
+    administered_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    next_dose_at TIMESTAMP WITH TIME ZONE,
+    interval_hours INT DEFAULT 6,
+    administered_by TEXT NOT NULL DEFAULT 'Responsável',
+    reason TEXT,
+    notes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 12. CONSULTAS PEDIÁTRICAS E RECEITUÁRIO
+CREATE TABLE IF NOT EXISTS public.medical_appointments (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    baby_id UUID NOT NULL REFERENCES public.babies(id) ON DELETE CASCADE,
+    doctor_name TEXT NOT NULL,
+    specialty TEXT NOT NULL DEFAULT 'Pediatra Geral',
+    clinic_name TEXT,
+    appointment_date DATE NOT NULL,
+    phone TEXT,
+    questions_to_ask TEXT[],
+    doctor_diagnosis_notes TEXT,
+    prescription_notes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- POLÍTICAS RLS PARA AS NOVAS TABELAS DE SAÚDE
+ALTER TABLE public.medication_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.medical_appointments ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Family members access medication_logs" ON public.medication_logs
+FOR ALL USING (
+    baby_id IN (
+        SELECT b.id FROM public.babies b
+        JOIN public.family_members fm ON fm.family_id = b.family_id
+        WHERE fm.user_id = auth.uid()
+    )
+);
+
+CREATE POLICY "Family members access medical_appointments" ON public.medical_appointments
+FOR ALL USING (
+    baby_id IN (
+        SELECT b.id FROM public.babies b
+        JOIN public.family_members fm ON fm.family_id = b.family_id
+        WHERE fm.user_id = auth.uid()
+    )
+);

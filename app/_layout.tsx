@@ -24,7 +24,7 @@ export default function RootLayout() {
               headerShown: true,
               title: 'Novo Momento',
               headerTintColor: Colors.textPrimary,
-              headerStyle: { backgroundColor: Colors.surface },
+              headerStyle: { backgroundColor: '#FFFFFF' },
             }}
           />
           <Stack.Screen
@@ -32,9 +32,39 @@ export default function RootLayout() {
             options={{
               presentation: 'modal',
               headerShown: true,
-              title: 'Ficha da Escola & Cuidador',
+              title: 'Passe Escolar & Cuidador',
               headerTintColor: Colors.textPrimary,
-              headerStyle: { backgroundColor: Colors.surface },
+              headerStyle: { backgroundColor: '#FFFFFF' },
+            }}
+          />
+          <Stack.Screen
+            name="modals/add-growth"
+            options={{
+              presentation: 'modal',
+              headerShown: true,
+              title: 'Nova Medição (Curvas OMS)',
+              headerTintColor: Colors.textPrimary,
+              headerStyle: { backgroundColor: '#FFFFFF' },
+            }}
+          />
+          <Stack.Screen
+            name="modals/add-medication"
+            options={{
+              presentation: 'modal',
+              headerShown: true,
+              title: 'Registrar Remédio / Febre',
+              headerTintColor: Colors.textPrimary,
+              headerStyle: { backgroundColor: '#FFFFFF' },
+            }}
+          />
+          <Stack.Screen
+            name="modals/medical-report"
+            options={{
+              presentation: 'modal',
+              headerShown: true,
+              title: 'Relatório para o Pediatra',
+              headerTintColor: Colors.textPrimary,
+              headerStyle: { backgroundColor: '#FFFFFF' },
             }}
           />
         </Stack>
