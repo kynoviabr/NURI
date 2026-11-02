@@ -2,21 +2,30 @@ import React from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { AuthProvider } from '../src/context/AuthContext';
 import { AppProvider } from '../src/context/AppContext';
 import { Colors } from '../src/constants/theme';
 
 export default function RootLayout() {
   return (
     <SafeAreaProvider>
-      <AppProvider>
-        <StatusBar style="dark" backgroundColor={Colors.background} />
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: { backgroundColor: Colors.background },
-          }}
-        >
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <AuthProvider>
+        <AppProvider>
+          <StatusBar style="dark" backgroundColor={Colors.background} />
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              contentStyle: { backgroundColor: Colors.background },
+            }}
+          >
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="auth/login" options={{ headerShown: false }} />
+            
+            {/* CONTA & PERFIL */}
+            <Stack.Screen
+              name="modals/user-profile"
+              options={{ presentation: 'modal', headerShown: true, title: 'Minha Conta & Família', headerTintColor: Colors.textPrimary, headerStyle: { backgroundColor: '#FFFFFF' } }}
+            />
           
           {/* MODAIS DE MEMÓRIAS E ESCOLA */}
           <Stack.Screen
@@ -86,9 +95,8 @@ export default function RootLayout() {
             options={{ presentation: 'modal', headerShown: true, title: 'Novo Recado da Escola / Babá', headerTintColor: Colors.textPrimary, headerStyle: { backgroundColor: '#FFFFFF' } }}
           />
         </Stack>
-
-
-      </AppProvider>
+        </AppProvider>
+      </AuthProvider>
     </SafeAreaProvider>
   );
 }

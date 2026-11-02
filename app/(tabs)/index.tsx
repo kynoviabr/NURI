@@ -25,8 +25,10 @@ import {
   Send,
   Star,
   Award,
+  User as UserIcon,
 } from 'lucide-react-native';
 import { useApp } from '../../src/context/AppContext';
+import { useAuth } from '../../src/context/AuthContext';
 import { Colors, Spacing, Radius, Shadows } from '../../src/constants/theme';
 import { calculateBabyAge, calculateGestation, formatRelativeDate } from '../../src/utils/babyCalculations';
 import { FirstMilestoneItem, Moment } from '../../src/types/database';
@@ -41,6 +43,7 @@ export default function FeedScreen() {
     addMomentReaction,
     growthLogs,
   } = useApp();
+  const { profile } = useAuth();
 
   const isBorn = baby.status === 'born';
   const ageInfo = isBorn && baby.birth_date ? calculateBabyAge(baby.birth_date) : null;
@@ -136,17 +139,31 @@ export default function FeedScreen() {
           </View>
         </View>
 
-        {/* ALTERNADOR DE MODO */}
-        <TouchableOpacity
-          style={styles.modeToggle}
-          onPress={toggleBabyMode}
-          activeOpacity={0.8}
-        >
-          <BabyIcon size={14} color={Colors.primary} />
-          <Text style={styles.modeToggleText}>
-            {isBorn ? 'Ver Gestação' : 'Ver Nascido'}
-          </Text>
-        </TouchableOpacity>
+        {/* AÇÕES DO HEADER DIREITO */}
+        <View style={styles.headerRightActions}>
+          <TouchableOpacity
+            style={styles.modeToggle}
+            onPress={toggleBabyMode}
+            activeOpacity={0.8}
+          >
+            <BabyIcon size={14} color={Colors.primary} />
+            <Text style={styles.modeToggleText}>
+              {isBorn ? 'Gestação' : 'Nascido'}
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.profileBtn}
+            onPress={() => router.push('/modals/user-profile')}
+            activeOpacity={0.8}
+          >
+            {profile?.avatar_url ? (
+              <Image source={{ uri: profile.avatar_url }} style={styles.profileAvatarImg} />
+            ) : (
+              <UserIcon size={16} color={Colors.primary} />
+            )}
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* SELETOR DE SUB-ABAS (Linha do Tempo, Mesversários, Primeiras Vezes) */}
@@ -744,6 +761,27 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
     color: Colors.primary,
+  },
+  headerRightActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  profileBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#FAF8F5',
+    borderWidth: 1.5,
+    borderColor: Colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  profileAvatarImg: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
   },
   subTabsContainer: {
     flexDirection: 'row',

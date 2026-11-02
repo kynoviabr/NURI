@@ -46,7 +46,8 @@
         {
           "photosPermission": "O Nuri precisa acessar suas fotos para criar a linha do tempo do bebê."
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "extra": {
       "eas": {

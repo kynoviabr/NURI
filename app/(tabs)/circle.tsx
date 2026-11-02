@@ -26,6 +26,7 @@ import {
   ExternalLink,
   ShieldAlert,
   CheckCircle2,
+  User,
 } from 'lucide-react-native';
 import { useApp } from '../../src/context/AppContext';
 import { Colors, Spacing, Radius, Shadows } from '../../src/constants/theme';
@@ -128,9 +129,20 @@ export default function CircleScreen() {
           <Text style={styles.headerTitle}>Círculo Familiar & Escola</Text>
           <Text style={styles.headerSubtitle}>Rede privada e gestão de cuidadores</Text>
         </View>
-        <View style={styles.privatePill}>
-          <Lock size={12} color={Colors.primary} />
-          <Text style={styles.privatePillText}>100% Fechado</Text>
+        <View style={styles.headerRightActions}>
+          <TouchableOpacity
+            style={styles.profileBadgeBtn}
+            onPress={() => router.push('/modals/user-profile')}
+            activeOpacity={0.8}
+          >
+            <User size={13} color={Colors.primary} />
+            <Text style={styles.profileBadgeText}>Minha Conta</Text>
+          </TouchableOpacity>
+
+          <View style={styles.privatePill}>
+            <Lock size={12} color={Colors.primary} />
+            <Text style={styles.privatePillText}>100% Fechado</Text>
+          </View>
         </View>
       </View>
 
@@ -561,6 +573,27 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: Colors.textSecondary,
     marginTop: 2,
+  },
+  headerRightActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  profileBadgeBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: '#FAF8F5',
+    borderWidth: 1,
+    borderColor: Colors.border,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: Radius.full,
+  },
+  profileBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: Colors.textPrimary,
   },
   privatePill: {
     flexDirection: 'row',
