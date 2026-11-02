@@ -34,7 +34,7 @@ export default function AddSleepModal() {
   const [liveElapsedSec, setLiveElapsedSec] = useState(0);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
+    let interval: ReturnType<typeof setInterval> | null = null;
     if (activeOngoingSleep) {
       const startMs = new Date(activeOngoingSleep.start_time).getTime();
       const updateSeconds = () => {

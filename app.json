@@ -6,13 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "scheme": "nuri",
-    "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#FDFBF7"
-    },
+    "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.nuri.babyapp",
@@ -30,9 +24,11 @@
       "package": "com.nuri.babyapp",
       "permissions": [
         "CAMERA",
-        "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE",
         "RECORD_AUDIO"
+      ],
+      "blockedPermissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
       ]
     },
     "web": {
@@ -44,10 +40,21 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "O Nuri precisa acessar suas fotos para criar a linha do tempo do bebê."
+          "photosPermission": "O Nuri precisa acessar suas fotos para criar a linha do tempo do bebê.",
+          "cameraPermission": "O Nuri precisa de acesso à câmera para registrar fotos e vídeos dos momentos marcantes do bebê.",
+          "microphonePermission": "Necessário para registrar vídeos com áudio das primeiras palavras e momentos do bebê."
         }
       ],
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#FDFBF7",
+          "imageWidth": 200
+        }
+      ]
     ],
     "extra": {
       "eas": {
